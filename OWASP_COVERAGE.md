@@ -1,6 +1,6 @@
 # OWASP Coverage Matrix
 
-waf-playbook test cases are systematically mapped to the **OWASP Top 10 (2021)** and the **OWASP Web Security Testing Guide (WSTG) v4.2**. Each test case file includes OWASP references in its `meta.owasp` field.
+wafworth test cases are systematically mapped to the **OWASP Top 10 (2021)** and the **OWASP Web Security Testing Guide (WSTG) v4.2**. Each test case file includes OWASP references in its `meta.owasp` field.
 
 ## OWASP Top 10 (2021) Coverage
 
@@ -19,7 +19,7 @@ waf-playbook test cases are systematically mapped to the **OWASP Top 10 (2021)**
 
 ## OWASP WSTG (Web Security Testing Guide) Coverage
 
-| WSTG ID | Test Area | waf-playbook Category |
+| WSTG ID | Test Area | wafworth Category |
 |---------|-----------|----------------------|
 | WSTG-INFO-02 | Fingerprint Web Server | `scanner-detection/` |
 | WSTG-CONF-04 | Backup/Unreferenced Files | `authentication/auth.yaml` (admin paths) |
@@ -40,7 +40,7 @@ waf-playbook test cases are systematically mapped to the **OWASP Top 10 (2021)**
 
 ## Additional Coverage (Beyond OWASP)
 
-| Category | Source | waf-playbook Directory |
+| Category | Source | wafworth Directory |
 |----------|--------|----------------------|
 | WAF Padding Evasion | 2026 WAF Comparison Project | `waf-bypass/padding.yaml` |
 | Parameter Pollution | Community research 2025 | `waf-bypass/parameter-pollution.yaml` |

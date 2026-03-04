@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "waf-playbook"
+name = "wafworth"
 version = "0.1.0"
-description = "WAF-agnostic testing framework with encoding auto-generation and multi-WAF comparison"
+description = "Is your WAF worth it? \u2014 WAF-agnostic testing framework with encoding auto-generation and multi-WAF comparison"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
@@ -38,10 +38,10 @@ dev = [
 ]
 
 [project.scripts]
-waf-playbook = "wafplaybook.cli:cli"
+wafworth = "wafworth.cli:cli"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/wafplaybook"]
+packages = ["src/wafworth"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

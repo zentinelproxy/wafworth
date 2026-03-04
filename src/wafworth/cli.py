@@ -1,4 +1,4 @@
-"""Click CLI for waf-playbook."""
+"""Click CLI for wafworth."""
 
 from __future__ import annotations
 

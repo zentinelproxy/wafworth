@@ -12,4 +12,4 @@ services:
     image: nginx:alpine
 
   # Run tests:
-  #   waf-playbook run --target http://localhost:8080 --name coraza --block-status 403
+  #   wafworth run --target http://localhost:8080 --name coraza --block-status 403

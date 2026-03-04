@@ -8,7 +8,7 @@ import yaml
 
 from ..models import TestCase, TestExpected, TestRequest
 
-# CRS rule ID ranges → waf-playbook categories
+# CRS rule ID ranges → wafworth categories
 CRS_CATEGORY_MAP: dict[tuple[int, int], str] = {
     (901, 901): "Initialization",
     (910, 910): "Scanner Detection",
@@ -37,7 +37,7 @@ CRS_CATEGORY_MAP: dict[tuple[int, int], str] = {
 
 
 def _rule_id_to_category(rule_id: int) -> str:
-    """Map a CRS rule ID to a waf-playbook category."""
+    """Map a CRS rule ID to a wafworth category."""
     prefix = rule_id // 1000
     for (lo, hi), cat in CRS_CATEGORY_MAP.items():
         if lo <= prefix <= hi:
@@ -107,7 +107,7 @@ def _convert_ftw_test(
 
 
 def import_ftw_file(path: Path) -> list[TestCase]:
-    """Import a go-ftw YAML test file into waf-playbook format."""
+    """Import a go-ftw YAML test file into wafworth format."""
     with open(path) as f:
         data = yaml.safe_load(f)
 
@@ -151,7 +151,7 @@ def import_ftw_dir(directory: Path) -> list[TestCase]:
 
 
 def export_to_yaml(tests: list[TestCase], output_dir: Path, category: str = "") -> list[Path]:
-    """Export converted test cases to waf-playbook YAML format."""
+    """Export converted test cases to wafworth YAML format."""
     from collections import defaultdict
 
     by_category: dict[str, list[TestCase]] = defaultdict(list)

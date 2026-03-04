@@ -1,4 +1,4 @@
-"""Pydantic v2 models for waf-playbook."""
+"""Pydantic v2 models for wafworth."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# waf-playbook
+# wafworth
 
 OWASP-aligned, WAF-agnostic testing framework with encoding auto-generation and multi-WAF comparison.
 
@@ -45,55 +45,55 @@ pip install -e .
 ### Run tests against a WAF
 
 ```bash
-waf-playbook run --target http://localhost:8080 --name modsecurity
+wafworth run --target http://localhost:8080 --name modsecurity
 ```
 
 ### Run with multiple encodings
 
 ```bash
-waf-playbook run --target http://localhost:8080 --encodings plain,url,hex --concurrency 20
+wafworth run --target http://localhost:8080 --encodings plain,url,hex --concurrency 20
 ```
 
 ### Filter by tags
 
 ```bash
-waf-playbook run --target http://localhost:8080 --tags sqli,xss --exclude-tags paranoia-4
+wafworth run --target http://localhost:8080 --tags sqli,xss --exclude-tags paranoia-4
 ```
 
 ### CI mode with thresholds
 
 ```bash
-waf-playbook run --target http://localhost:8080 --fail-under 0.95 --fail-fp-over 0.05
+wafworth run --target http://localhost:8080 --fail-under 0.95 --fail-fp-over 0.05
 ```
 
 ### Compare multiple WAFs
 
 ```bash
-waf-playbook compare --results results/modsec/ results/zentinel/ --output comparison/
+wafworth compare --results results/modsec/ results/zentinel/ --output comparison/
 ```
 
 ### List test cases
 
 ```bash
-waf-playbook list --tags sqli
+wafworth list --tags sqli
 ```
 
 ### Validate test files
 
 ```bash
-waf-playbook validate testcases/
+wafworth validate testcases/
 ```
 
 ### Encode a payload
 
 ```bash
-waf-playbook encode "1' OR '1'='1"
+wafworth encode "1' OR '1'='1"
 ```
 
 ### Import go-ftw CRS tests
 
 ```bash
-waf-playbook import ftw /path/to/crs/tests/ --output testcases/
+wafworth import ftw /path/to/crs/tests/ --output testcases/
 ```
 
 ## Docker examples
@@ -103,7 +103,7 @@ See `examples/` for Docker Compose setups for ModSecurity+Nginx, Coraza+Caddy, a
 ```bash
 cd examples/modsecurity-nginx
 docker compose up -d
-waf-playbook run --target http://localhost:8080 --name modsecurity --output results/modsec/
+wafworth run --target http://localhost:8080 --name modsecurity --output results/modsec/
 ```
 
 ## Development

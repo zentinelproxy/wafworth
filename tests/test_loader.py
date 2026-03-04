@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from wafplaybook.loader import filter_tests, load_test_dir, load_test_file, validate_test_files
+from wafworth.loader import filter_tests, load_test_dir, load_test_file, validate_test_files
 
 
 def _write_yaml(tmp: Path, data: dict) -> Path:

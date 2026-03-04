@@ -2,7 +2,7 @@
 
 from pytest import approx
 
-from wafplaybook.models import (
+from wafworth.models import (
     Action,
     ConfusionMatrix,
     TestCase,

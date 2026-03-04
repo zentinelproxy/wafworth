@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from wafplaybook.compat.ftw import _rule_id_to_category, import_ftw_file
+from wafworth.compat.ftw import _rule_id_to_category, import_ftw_file
 
 
 def test_rule_id_mapping():

@@ -1,6 +1,6 @@
 """Tests for payload encoder."""
 
-from wafplaybook.encoder import (
+from wafworth.encoder import (
     encode_base64,
     encode_double_url,
     encode_hex,
@@ -11,7 +11,7 @@ from wafplaybook.encoder import (
     encode_utf7,
     expand_test_case,
 )
-from wafplaybook.models import (
+from wafworth.models import (
     Encoding,
     TestCase,
     TestExpected,

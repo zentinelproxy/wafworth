@@ -1,13 +1,13 @@
 """Tests for metrics computation."""
 
-from wafplaybook.metrics import (
+from wafworth.metrics import (
     compute_by_category,
     compute_by_encoding,
     compute_confusion_matrix,
     compute_latency_stats,
     failures,
 )
-from wafplaybook.models import Action, Encoding, TestResult
+from wafworth.models import Action, Encoding, TestResult
 
 
 def _result(
