@@ -8,4 +8,4 @@ COPY testcases/ testcases/
 
 RUN pip install --no-cache-dir .
 
-ENTRYPOINT ["waf-playbook"]
+ENTRYPOINT ["wafworth"]

@@ -1,0 +1,76 @@
+[tools]
+python = "3.13"
+uv = "latest"
+
+[env]
+VIRTUAL_ENV = "{{config_root}}/.venv"
+
+[tasks.install]
+description = "Create venv and install package with dev dependencies"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+uv venv
+uv pip install -e ".[dev]"
+"""
+
+[tasks.test]
+alias = "t"
+description = "Run test suite"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+pytest -v
+"""
+
+[tasks.lint]
+alias = "l"
+description = "Lint with ruff"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ruff check src/ tests/
+"""
+
+[tasks.fmt]
+alias = "f"
+description = "Format with ruff"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ruff format src/ tests/
+"""
+
+[tasks."fmt-check"]
+description = "Check formatting with ruff"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+ruff format --check src/ tests/
+"""
+
+[tasks.validate]
+description = "Validate all test case YAML files"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+wafworth validate testcases/
+"""
+
+[tasks.ci]
+alias = "c"
+description = "Run all CI checks (lint, format check, tests)"
+depends = ["lint", "fmt-check", "test"]
+
+[tasks.clean]
+description = "Remove build artifacts and caches"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+rm -rf build/ dist/ .eggs/ *.egg-info src/*.egg-info
+find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+find . -type d -name .pytest_cache -exec rm -rf {} + 2>/dev/null || true
+find . -type d -name .ruff_cache -exec rm -rf {} + 2>/dev/null || true
+rm -rf .mypy_cache/ .coverage htmlcov/
+echo "Cleaned build artifacts and caches"
+"""
