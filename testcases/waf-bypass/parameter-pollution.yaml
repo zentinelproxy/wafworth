@@ -1,0 +1,201 @@
+meta:
+  category: "WAF Bypass"
+  subcategory: "Parameter Pollution"
+  owasp: "WSTG-INPV-04"
+  severity: "high"
+
+tests:
+  # --- HTTP Parameter Pollution (HPP) ---
+  # Reference: OWASP WSTG-INPV-04, Ethiack 2025 research
+
+  - id: "bypass-hpp-001"
+    title: "Duplicate parameter with SQLi in second value"
+    tags: ["waf-bypass", "hpp", "sqli", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1&id=1' OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-hpp-002"
+    title: "SQLi split across duplicate params (server concatenates)"
+    tags: ["waf-bypass", "hpp", "sqli", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=1' UNION&q= SELECT * FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-hpp-003"
+    title: "XSS split across duplicate params"
+    tags: ["waf-bypass", "hpp", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "name=<script>&name=alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-hpp-004"
+    title: "Duplicate params with different casings"
+    tags: ["waf-bypass", "hpp", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "Id=safe&id=1' OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-hpp-005"
+    title: "Array-style param with injection"
+    tags: ["waf-bypass", "hpp", "sqli", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "id[]=1&id[]=2 UNION SELECT password FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-hpp-006"
+    title: "POST body HPP with injection in later param"
+    tags: ["waf-bypass", "hpp", "sqli", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      content_type: "application/x-www-form-urlencoded"
+      body: "username=admin&username=admin' OR '1'='1&password=x"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- Parameter name manipulation ---
+
+  - id: "bypass-param-001"
+    title: "JSON prototype pollution via __proto__"
+    tags: ["waf-bypass", "parameter", "prototype-pollution", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/config"
+      content_type: "application/json"
+      body: '{"__proto__":{"isAdmin":true}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-param-002"
+    title: "JSON prototype pollution via constructor.prototype"
+    tags: ["waf-bypass", "parameter", "prototype-pollution", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/settings"
+      content_type: "application/json"
+      body: '{"constructor":{"prototype":{"isAdmin":true}}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-param-003"
+    title: "JSON key with Unicode escape hiding SQLi"
+    tags: ["waf-bypass", "parameter", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/query"
+      content_type: "application/json"
+      body: '{"\u0071\u0075\u0065\u0072\u0079":"1 UNION SELECT * FROM users--"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-param-004"
+    title: "Nested JSON with deeply buried injection"
+    tags: ["waf-bypass", "parameter", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      content_type: "application/json"
+      body: '{"a":{"b":{"c":{"d":{"e":{"query":"1; DROP TABLE users;--"}}}}}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-param-005"
+    title: "XML attribute parameter injection"
+    tags: ["waf-bypass", "parameter", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      content_type: "application/xml"
+      body: '<query id="1 UNION SELECT * FROM users--"/>'
+    expected:
+      status: 403
+      action: "block"
+
+  # --- Mixed parameter sources ---
+
+  - id: "bypass-mixed-001"
+    title: "SQLi in query string while body has safe data"
+    tags: ["waf-bypass", "parameter", "sqli", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      query_string: "q=1' OR 1=1--"
+      content_type: "application/x-www-form-urlencoded"
+      body: "category=electronics&page=1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-mixed-002"
+    title: "XSS in cookie-like header value"
+    tags: ["waf-bypass", "parameter", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/dashboard"
+      headers:
+        Cookie: "session=abc123; theme=<script>alert('XSS')</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-mixed-003"
+    title: "SQLi in Referer header"
+    tags: ["waf-bypass", "parameter", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        Referer: "https://example.com/page?id=1' UNION SELECT password FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-mixed-004"
+    title: "Injection via X-Forwarded-For header"
+    tags: ["waf-bypass", "parameter", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/log"
+      headers:
+        X-Forwarded-For: "127.0.0.1' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-mixed-005"
+    title: "Injection in X-Originating-IP header"
+    tags: ["waf-bypass", "parameter", "cmdi", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/geo"
+      headers:
+        X-Originating-IP: "127.0.0.1; cat /etc/passwd"
+    expected:
+      status: 403
+      action: "block"

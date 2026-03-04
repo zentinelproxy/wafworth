@@ -1,0 +1,3045 @@
+{
+  "meta": {
+    "target": "zentinel-waf",
+    "timestamp": "2026-03-04T10:01:35.634138+00:00",
+    "total_tests": 598,
+    "passed": 316,
+    "failed": 282
+  },
+  "overall": {
+    "confusion_matrix": {
+      "tp": 205,
+      "fp": 11,
+      "tn": 111,
+      "fn": 271
+    },
+    "detection_rate": 0.43067226890756305,
+    "false_positive_rate": 0.09016393442622951,
+    "precision": 0.9490740740740741,
+    "f1": 0.5924855491329479,
+    "balanced_accuracy": 0.6702541672406668,
+    "youdens_index": 0.34050833448133355
+  },
+  "latency": {
+    "p50_ms": 2.49,
+    "p95_ms": 2.77,
+    "p99_ms": 3.04,
+    "mean_ms": 2.48,
+    "max_ms": 5.32
+  },
+  "by_category": {
+    "API Security": {
+      "confusion_matrix": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 8,
+        "fn": 20
+      },
+      "detection_rate": 0.0,
+      "false_positive_rate": 0.0
+    },
+    "Authentication Attacks": {
+      "confusion_matrix": {
+        "tp": 4,
+        "fp": 0,
+        "tn": 0,
+        "fn": 16
+      },
+      "detection_rate": 0.2,
+      "false_positive_rate": 0.0
+    },
+    "Command Injection": {
+      "confusion_matrix": {
+        "tp": 1,
+        "fp": 0,
+        "tn": 8,
+        "fn": 29
+      },
+      "detection_rate": 0.03333333333333333,
+      "false_positive_rate": 0.0
+    },
+    "Cross-Site Scripting": {
+      "confusion_matrix": {
+        "tp": 44,
+        "fp": 0,
+        "tn": 2,
+        "fn": 16
+      },
+      "detection_rate": 0.7333333333333333,
+      "false_positive_rate": 0.0
+    },
+    "Deserialization": {
+      "confusion_matrix": {
+        "tp": 1,
+        "fp": 1,
+        "tn": 2,
+        "fn": 11
+      },
+      "detection_rate": 0.08333333333333333,
+      "false_positive_rate": 0.3333333333333333
+    },
+    "Evasion Techniques": {
+      "confusion_matrix": {
+        "tp": 6,
+        "fp": 0,
+        "tn": 5,
+        "fn": 19
+      },
+      "detection_rate": 0.24,
+      "false_positive_rate": 0.0
+    },
+    "False Positives": {
+      "confusion_matrix": {
+        "tp": 0,
+        "fp": 2,
+        "tn": 48,
+        "fn": 0
+      },
+      "detection_rate": 0.0,
+      "false_positive_rate": 0.04
+    },
+    "File Upload": {
+      "confusion_matrix": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 0,
+        "fn": 15
+      },
+      "detection_rate": 0.0,
+      "false_positive_rate": 0.0
+    },
+    "Known CVEs": {
+      "confusion_matrix": {
+        "tp": 20,
+        "fp": 0,
+        "tn": 6,
+        "fn": 17
+      },
+      "detection_rate": 0.5405405405405406,
+      "false_positive_rate": 0.0
+    },
+    "Path Traversal": {
+      "confusion_matrix": {
+        "tp": 24,
+        "fp": 1,
+        "tn": 7,
+        "fn": 6
+      },
+      "detection_rate": 0.8,
+      "false_positive_rate": 0.125
+    },
+    "Protocol Attacks": {
+      "confusion_matrix": {
+        "tp": 6,
+        "fp": 1,
+        "tn": 6,
+        "fn": 13
+      },
+      "detection_rate": 0.3157894736842105,
+      "false_positive_rate": 0.14285714285714285
+    },
+    "ReDoS": {
+      "confusion_matrix": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 0,
+        "fn": 8
+      },
+      "detection_rate": 0.2,
+      "false_positive_rate": 0.0
+    },
+    "SQL Injection": {
+      "confusion_matrix": {
+        "tp": 27,
+        "fp": 0,
+        "tn": 3,
+        "fn": 45
+      },
+      "detection_rate": 0.375,
+      "false_positive_rate": 0.0
+    },
+    "Scanner Detection": {
+      "confusion_matrix": {
+        "tp": 12,
+        "fp": 5,
+        "tn": 5,
+        "fn": 3
+      },
+      "detection_rate": 0.8,
+      "false_positive_rate": 0.5
+    },
+    "Server-Side Request Forgery": {
+      "confusion_matrix": {
+        "tp": 12,
+        "fp": 0,
+        "tn": 5,
+        "fn": 3
+      },
+      "detection_rate": 0.8,
+      "false_positive_rate": 0.0
+    },
+    "Server-Side Template Injection": {
+      "confusion_matrix": {
+        "tp": 9,
+        "fp": 1,
+        "tn": 2,
+        "fn": 6
+      },
+      "detection_rate": 0.6,
+      "false_positive_rate": 0.3333333333333333
+    },
+    "WAF Bypass": {
+      "confusion_matrix": {
+        "tp": 37,
+        "fp": 0,
+        "tn": 0,
+        "fn": 29
+      },
+      "detection_rate": 0.5606060606060606,
+      "false_positive_rate": 0.0
+    },
+    "XML External Entities": {
+      "confusion_matrix": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 4,
+        "fn": 15
+      },
+      "detection_rate": 0.0,
+      "false_positive_rate": 0.0
+    }
+  },
+  "by_encoding": {
+    "plain": {
+      "confusion_matrix": {
+        "tp": 205,
+        "fp": 11,
+        "tn": 111,
+        "fn": 271
+      },
+      "detection_rate": 0.43067226890756305
+    }
+  },
+  "failures": [
+    {
+      "test_id": "api-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL introspection query",
+      "error": null
+    },
+    {
+      "test_id": "api-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL deeply nested query (DoS)",
+      "error": null
+    },
+    {
+      "test_id": "api-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL batch query (DoS)",
+      "error": null
+    },
+    {
+      "test_id": "api-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL alias-based DoS",
+      "error": null
+    },
+    {
+      "test_id": "api-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL SQLi in variable",
+      "error": null
+    },
+    {
+      "test_id": "api-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "JWT none algorithm",
+      "error": null
+    },
+    {
+      "test_id": "api-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "JWT algorithm confusion (RS256 to HS256)",
+      "error": null
+    },
+    {
+      "test_id": "api-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "JWT with jwk header injection",
+      "error": null
+    },
+    {
+      "test_id": "api-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "JSON depth bomb",
+      "error": null
+    },
+    {
+      "test_id": "api-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "JSON key bomb",
+      "error": null
+    },
+    {
+      "test_id": "api-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "Mass assignment via JSON",
+      "error": null
+    },
+    {
+      "test_id": "api-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "BOLA - accessing other user resources",
+      "error": null
+    },
+    {
+      "test_id": "api-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "API version bypass",
+      "error": null
+    },
+    {
+      "test_id": "api-014",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "Content-Type mismatch attack",
+      "error": null
+    },
+    {
+      "test_id": "api-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "Prototype pollution via JSON",
+      "error": null
+    },
+    {
+      "test_id": "api-016",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "Prototype pollution via constructor",
+      "error": null
+    },
+    {
+      "test_id": "api-017",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "REST API enumeration via sequential IDs",
+      "error": null
+    },
+    {
+      "test_id": "api-018",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL mutation with XSS",
+      "error": null
+    },
+    {
+      "test_id": "api-019",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "OpenAPI/Swagger endpoint probe",
+      "error": null
+    },
+    {
+      "test_id": "api-020",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "API Security",
+      "title": "GraphQL field suggestion abuse",
+      "error": null
+    },
+    {
+      "test_id": "auth-brute-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Common credential pair admin:admin",
+      "error": null
+    },
+    {
+      "test_id": "auth-brute-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Common credential pair admin:password",
+      "error": null
+    },
+    {
+      "test_id": "auth-brute-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Common credential pair root:toor",
+      "error": null
+    },
+    {
+      "test_id": "auth-brute-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Common credential pair admin:123456",
+      "error": null
+    },
+    {
+      "test_id": "auth-jwt-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "JWT with alg:none bypass",
+      "error": null
+    },
+    {
+      "test_id": "auth-jwt-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "JWT with alg:None (capitalized) bypass",
+      "error": null
+    },
+    {
+      "test_id": "auth-jwt-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "JWT algorithm confusion RS256 to HS256",
+      "error": null
+    },
+    {
+      "test_id": "auth-jwt-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "JWT with JWK header injection",
+      "error": null
+    },
+    {
+      "test_id": "auth-session-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Session ID in URL parameter",
+      "error": null
+    },
+    {
+      "test_id": "auth-session-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Session token in URL (PHPSESSID)",
+      "error": null
+    },
+    {
+      "test_id": "auth-admin-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "WordPress admin login endpoint",
+      "error": null
+    },
+    {
+      "test_id": "auth-admin-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "phpMyAdmin default access",
+      "error": null
+    },
+    {
+      "test_id": "auth-admin-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Actuator endpoints exposure",
+      "error": null
+    },
+    {
+      "test_id": "auth-admin-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 501,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Debug/trace endpoint access",
+      "error": null
+    },
+    {
+      "test_id": "auth-admin-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "AWS credentials file",
+      "error": null
+    },
+    {
+      "test_id": "auth-admin-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Authentication Attacks",
+      "title": "Docker socket exposure",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Perl reverse shell",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Ruby command execution via system()",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Netcat reverse shell with -e flag",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Mkfifo-based reverse shell",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Crontab injection for persistence",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Command injection via IFS variable substitution",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Windows net user account creation",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Data exfiltration via DNS",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-adv-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Command injection via ANSI-C quoting",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Semicolon command injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Pipe command injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Command substitution $()",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Backtick injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "AND operator injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "OR operator injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Newline injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Curl to exfiltrate data",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "wget command injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Python reverse shell",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Bash reverse shell",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Environment variable exfiltration",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Chained commands with redirection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-014",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Command injection via variable expansion",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Wildcard-based injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-016",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Concatenation evasion",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-017",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Base64 encoded command",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-018",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "Hex encoded command",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-019",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "PowerShell command injection",
+      "error": null
+    },
+    {
+      "test_id": "cmdi-020",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Command Injection",
+      "title": "cmd.exe injection",
+      "error": null
+    },
+    {
+      "test_id": "deser-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Java serialized object (magic bytes)",
+      "error": null
+    },
+    {
+      "test_id": "deser-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Java RMI gadget chain",
+      "error": null
+    },
+    {
+      "test_id": "deser-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "PHP serialized object injection",
+      "error": null
+    },
+    {
+      "test_id": "deser-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "PHP phar:// deserialization",
+      "error": null
+    },
+    {
+      "test_id": "deser-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Python pickle injection",
+      "error": null
+    },
+    {
+      "test_id": "deser-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": ".NET ViewState deserialization",
+      "error": null
+    },
+    {
+      "test_id": "deser-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Ruby Marshal deserialization",
+      "error": null
+    },
+    {
+      "test_id": "deser-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Jackson polymorphic typing",
+      "error": null
+    },
+    {
+      "test_id": "deser-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Fastjson autotype bypass",
+      "error": null
+    },
+    {
+      "test_id": "deser-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "Node.js node-serialize RCE",
+      "error": null
+    },
+    {
+      "test_id": "deser-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "LDAP JNDI injection",
+      "error": null
+    },
+    {
+      "test_id": "deser-fp-002",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Deserialization",
+      "title": "False positive - YAML config",
+      "error": null
+    },
+    {
+      "test_id": "evasion-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Case alternation",
+      "error": null
+    },
+    {
+      "test_id": "evasion-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Tab character as space",
+      "error": null
+    },
+    {
+      "test_id": "evasion-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Carriage return as space",
+      "error": null
+    },
+    {
+      "test_id": "evasion-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Line feed as space",
+      "error": null
+    },
+    {
+      "test_id": "evasion-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Vertical tab as space",
+      "error": null
+    },
+    {
+      "test_id": "evasion-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "HPP - HTTP Parameter Pollution",
+      "error": null
+    },
+    {
+      "test_id": "evasion-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Chunked Transfer-Encoding evasion",
+      "error": null
+    },
+    {
+      "test_id": "evasion-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Content-Type boundary manipulation",
+      "error": null
+    },
+    {
+      "test_id": "evasion-014",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Path normalization bypass",
+      "error": null
+    },
+    {
+      "test_id": "evasion-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Mixed encoding (URL + HTML entity)",
+      "error": null
+    },
+    {
+      "test_id": "evasion-016",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Overlong UTF-8 sequences",
+      "error": null
+    },
+    {
+      "test_id": "evasion-017",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "JSON key unicode escape",
+      "error": null
+    },
+    {
+      "test_id": "evasion-018",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "XML CDATA section evasion",
+      "error": null
+    },
+    {
+      "test_id": "evasion-019",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Multipart form boundary evasion",
+      "error": null
+    },
+    {
+      "test_id": "evasion-020",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Payload in fragment identifier",
+      "error": null
+    },
+    {
+      "test_id": "evasion-021",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "Concatenation with + sign",
+      "error": null
+    },
+    {
+      "test_id": "evasion-022",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "SQL comment variants",
+      "error": null
+    },
+    {
+      "test_id": "evasion-023",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "JSON string concatenation",
+      "error": null
+    },
+    {
+      "test_id": "evasion-024",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Evasion Techniques",
+      "title": "IP address as hex",
+      "error": null
+    },
+    {
+      "test_id": "fp-add-014",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "False Positives",
+      "title": "Configuration update with path-like values",
+      "error": null
+    },
+    {
+      "test_id": "fp-add-015",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 501,
+      "encoding": "plain",
+      "category": "False Positives",
+      "title": "CORS preflight from legitimate SPA",
+      "error": null
+    },
+    {
+      "test_id": "upload-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "PHP webshell upload in filename",
+      "error": null
+    },
+    {
+      "test_id": "upload-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "JSP webshell upload",
+      "error": null
+    },
+    {
+      "test_id": "upload-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "ASP webshell upload",
+      "error": null
+    },
+    {
+      "test_id": "upload-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "Double extension bypass (.php.jpg)",
+      "error": null
+    },
+    {
+      "test_id": "upload-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "Null byte extension bypass (.php%00.jpg)",
+      "error": null
+    },
+    {
+      "test_id": "upload-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "Alternative PHP extension (.phtml)",
+      "error": null
+    },
+    {
+      "test_id": "upload-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "Case variation extension bypass (.pHp)",
+      "error": null
+    },
+    {
+      "test_id": "upload-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "Trailing dot extension bypass (shell.php.)",
+      "error": null
+    },
+    {
+      "test_id": "upload-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "PHP shell with image/jpeg Content-Type",
+      "error": null
+    },
+    {
+      "test_id": "upload-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "Path traversal in upload filename",
+      "error": null
+    },
+    {
+      "test_id": "upload-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "SVG file with embedded JavaScript",
+      "error": null
+    },
+    {
+      "test_id": "upload-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "HTML file upload with XSS",
+      "error": null
+    },
+    {
+      "test_id": "upload-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "ZIP slip via crafted archive filename",
+      "error": null
+    },
+    {
+      "test_id": "upload-014",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": "SSTI payload in uploaded filename",
+      "error": null
+    },
+    {
+      "test_id": "upload-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "File Upload",
+      "title": ".htaccess upload to enable PHP execution",
+      "error": null
+    },
+    {
+      "test_id": "cve-2024-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2024-6387 \u2014 regreSSHion OpenSSH (probe detection)",
+      "error": null
+    },
+    {
+      "test_id": "cve-2024-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2024-27198 \u2014 JetBrains TeamCity auth bypass",
+      "error": null
+    },
+    {
+      "test_id": "cve-2024-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2024-23897 \u2014 Jenkins CLI arbitrary file read",
+      "error": null
+    },
+    {
+      "test_id": "cve-2024-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2024-1709 \u2014 ConnectWise ScreenConnect auth bypass",
+      "error": null
+    },
+    {
+      "test_id": "cve-2024-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2024-3400 \u2014 Palo Alto PAN-OS command injection",
+      "error": null
+    },
+    {
+      "test_id": "cve-2025-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2025-24813 \u2014 Apache Tomcat partial PUT RCE",
+      "error": null
+    },
+    {
+      "test_id": "cve-2025-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2025-1097 \u2014 Kubernetes Ingress-Nginx RCE via annotation",
+      "error": null
+    },
+    {
+      "test_id": "cve-2025-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "CVE-2025-29927 \u2014 Next.js middleware authorization bypass",
+      "error": null
+    },
+    {
+      "test_id": "cve-2025-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "React2Shell-style padded RCE payload",
+      "error": null
+    },
+    {
+      "test_id": "cve-2025-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "SSRF via PDF generation library (WeasyPrint/wkhtmltopdf)",
+      "error": null
+    },
+    {
+      "test_id": "cve-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "Log4Shell - URL encoded",
+      "error": null
+    },
+    {
+      "test_id": "cve-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "Spring4Shell (CVE-2022-22965)",
+      "error": null
+    },
+    {
+      "test_id": "cve-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "F5 BIG-IP RCE (CVE-2022-1388)",
+      "error": null
+    },
+    {
+      "test_id": "cve-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "GitLab SSRF (CVE-2021-22214)",
+      "error": null
+    },
+    {
+      "test_id": "cve-016",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "WordPress xmlrpc pingback SSRF",
+      "error": null
+    },
+    {
+      "test_id": "cve-018",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "WebLogic deserialization (CVE-2019-2725)",
+      "error": null
+    },
+    {
+      "test_id": "cve-020",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Known CVEs",
+      "title": "MOVEit Transfer SQLi (CVE-2023-34362)",
+      "error": null
+    },
+    {
+      "test_id": "traversal-adv-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "Traversal in multipart upload filename",
+      "error": null
+    },
+    {
+      "test_id": "traversal-adv-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "Traversal via ZIP slip pattern",
+      "error": null
+    },
+    {
+      "test_id": "traversal-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "Data URI inclusion",
+      "error": null
+    },
+    {
+      "test_id": "traversal-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "Overlong UTF-8 encoding",
+      "error": null
+    },
+    {
+      "test_id": "traversal-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "Traversal in POST body",
+      "error": null
+    },
+    {
+      "test_id": "traversal-016",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "Windows UNC path",
+      "error": null
+    },
+    {
+      "test_id": "traversal-fp-004",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Path Traversal",
+      "title": "False positive - ellipsis in text",
+      "error": null
+    },
+    {
+      "test_id": "protocol-adv-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 0,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "Transfer-Encoding with tab obfuscation",
+      "error": "Only Transfer-Encoding: chunked is supported"
+    },
+    {
+      "test_id": "protocol-adv-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "H2C upgrade smuggling attempt",
+      "error": null
+    },
+    {
+      "test_id": "protocol-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "HTTP request smuggling CL.TE",
+      "error": null
+    },
+    {
+      "test_id": "protocol-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "HTTP request smuggling TE.CL",
+      "error": null
+    },
+    {
+      "test_id": "protocol-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 0,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "Transfer-Encoding obfuscation",
+      "error": "Illegal header value b' chunked'"
+    },
+    {
+      "test_id": "protocol-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 501,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "TRACE method",
+      "error": null
+    },
+    {
+      "test_id": "protocol-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 0,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "CONNECT method",
+      "error": "invalid_request: Invalid port: '18080evil.com:443'"
+    },
+    {
+      "test_id": "protocol-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "Host header injection",
+      "error": null
+    },
+    {
+      "test_id": "protocol-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "X-Forwarded-For header spoofing",
+      "error": null
+    },
+    {
+      "test_id": "protocol-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "Oversized header value",
+      "error": null
+    },
+    {
+      "test_id": "protocol-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "HTTP verb tampering - method override",
+      "error": null
+    },
+    {
+      "test_id": "protocol-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 0,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "Large request body (potential DoS)",
+      "error": "invalid_request: Too little data for declared Content-Length"
+    },
+    {
+      "test_id": "protocol-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "URL with backslash",
+      "error": null
+    },
+    {
+      "test_id": "protocol-fp-005",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 501,
+      "encoding": "plain",
+      "category": "Protocol Attacks",
+      "title": "False positive - OPTIONS preflight",
+      "error": null
+    },
+    {
+      "test_id": "redos-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "Exponential backtracking via nested quantifiers (a{n})",
+      "error": null
+    },
+    {
+      "test_id": "redos-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "Long repeating pattern for email validation bypass",
+      "error": null
+    },
+    {
+      "test_id": "redos-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "URL-like pattern for path regex exhaustion",
+      "error": null
+    },
+    {
+      "test_id": "redos-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "Deep nested JSON for JSON parsing DoS",
+      "error": null
+    },
+    {
+      "test_id": "redos-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "XML bomb (Billion Laughs)",
+      "error": null
+    },
+    {
+      "test_id": "redos-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "JSON key bomb",
+      "error": null
+    },
+    {
+      "test_id": "redos-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "Oversized query string for URL parsing DoS",
+      "error": null
+    },
+    {
+      "test_id": "redos-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "ReDoS",
+      "title": "GraphQL query depth bomb",
+      "error": null
+    },
+    {
+      "test_id": "scanner-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "w3af scanner",
+      "error": null
+    },
+    {
+      "test_id": "scanner-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "Arachni scanner",
+      "error": null
+    },
+    {
+      "test_id": "scanner-014",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "Jorgee vulnerability scanner",
+      "error": null
+    },
+    {
+      "test_id": "scanner-fp-001",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "False positive - Chrome browser",
+      "error": null
+    },
+    {
+      "test_id": "scanner-fp-002",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "False positive - Firefox browser",
+      "error": null
+    },
+    {
+      "test_id": "scanner-fp-006",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "False positive - Googlebot",
+      "error": null
+    },
+    {
+      "test_id": "scanner-fp-007",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "False positive - Safari browser",
+      "error": null
+    },
+    {
+      "test_id": "scanner-fp-008",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Scanner Detection",
+      "title": "False positive - Slack link preview",
+      "error": null
+    },
+    {
+      "test_id": "sqli-adv-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "HAVING clause injection for column enumeration",
+      "error": null
+    },
+    {
+      "test_id": "sqli-adv-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "GROUP BY column enumeration",
+      "error": null
+    },
+    {
+      "test_id": "sqli-adv-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Stored procedure exploitation via CALL",
+      "error": null
+    },
+    {
+      "test_id": "sqli-adv-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Second-order injection via profile update",
+      "error": null
+    },
+    {
+      "test_id": "sqli-adv-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "PostgreSQL dollar-quoting injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Classic OR 1=1 injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "OR 1=1 with double dash comment",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "OR 1=1 with hash comment",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Single quote escape with always-true condition",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Numeric parameter with OR",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "SQL injection in POST body (form)",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "SQL injection in JSON body",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Tautology with string comparison",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "AND-based condition injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "SELECT in query parameter",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "INSERT INTO injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UPDATE SET injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-basic-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "DELETE FROM injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-blind-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Boolean-based blind - AND 1=1",
+      "error": null
+    },
+    {
+      "test_id": "sqli-blind-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Boolean-based blind - AND 1=2",
+      "error": null
+    },
+    {
+      "test_id": "sqli-blind-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Time-based blind - WAITFOR DELAY (MSSQL)",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Case alternation - SeLeCt",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "URL-encoded keywords",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Double URL encoding",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Tab instead of space",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Newline instead of space",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Hex encoding of strings",
+      "error": null
+    },
+    {
+      "test_id": "sqli-evasion-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Scientific notation bypass",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB $gt operator injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB $ne operator injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB $regex injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB $where injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB $or operator bypass",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB $nin injection",
+      "error": null
+    },
+    {
+      "test_id": "sqli-nosql-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "MongoDB JavaScript injection via $where",
+      "error": null
+    },
+    {
+      "test_id": "sqli-stacked-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "DROP TABLE via stacked query",
+      "error": null
+    },
+    {
+      "test_id": "sqli-stacked-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UPDATE via stacked query",
+      "error": null
+    },
+    {
+      "test_id": "sqli-stacked-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Multiple stacked queries",
+      "error": null
+    },
+    {
+      "test_id": "sqli-stacked-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Stacked query in POST body",
+      "error": null
+    },
+    {
+      "test_id": "sqli-union-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "Basic UNION SELECT",
+      "error": null
+    },
+    {
+      "test_id": "sqli-union-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UNION ALL SELECT",
+      "error": null
+    },
+    {
+      "test_id": "sqli-union-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UNION SELECT with NULL columns",
+      "error": null
+    },
+    {
+      "test_id": "sqli-union-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UNION with information_schema",
+      "error": null
+    },
+    {
+      "test_id": "sqli-union-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UNION SELECT column discovery",
+      "error": null
+    },
+    {
+      "test_id": "sqli-union-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "SQL Injection",
+      "title": "UNION-based in POST body",
+      "error": null
+    },
+    {
+      "test_id": "ssrf-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Request Forgery",
+      "title": "Localhost with decimal IP",
+      "error": null
+    },
+    {
+      "test_id": "ssrf-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Request Forgery",
+      "title": "DNS rebinding - short hostname",
+      "error": null
+    },
+    {
+      "test_id": "ssrf-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Request Forgery",
+      "title": "Hex-encoded localhost",
+      "error": null
+    },
+    {
+      "test_id": "ssti-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "Jinja2 - OS command via Popen",
+      "error": null
+    },
+    {
+      "test_id": "ssti-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "Freemarker template injection",
+      "error": null
+    },
+    {
+      "test_id": "ssti-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "Velocity template injection",
+      "error": null
+    },
+    {
+      "test_id": "ssti-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "Handlebars prototype pollution",
+      "error": null
+    },
+    {
+      "test_id": "ssti-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "Pug/Jade template injection",
+      "error": null
+    },
+    {
+      "test_id": "ssti-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "Django template injection",
+      "error": null
+    },
+    {
+      "test_id": "ssti-fp-001",
+      "expected_action": "allow",
+      "expected_status": 200,
+      "actual_status": 403,
+      "encoding": "plain",
+      "category": "Server-Side Template Injection",
+      "title": "False positive - mustache-like display",
+      "error": null
+    },
+    {
+      "test_id": "bypass-h2-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "HTTP/2 :authority header injection",
+      "error": null
+    },
+    {
+      "test_id": "bypass-h2-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "HTTP/2 header name with uppercase (protocol violation)",
+      "error": null
+    },
+    {
+      "test_id": "bypass-h2-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "HTTP/2 non-standard method with SQLi",
+      "error": null
+    },
+    {
+      "test_id": "bypass-h2-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 0,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "HTTP/2 with Content-Length and body mismatch (CL desync)",
+      "error": "invalid_request: Too much data for declared Content-Length"
+    },
+    {
+      "test_id": "bypass-h2-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "HTTP/2 with Transfer-Encoding header (H2.TE desync)",
+      "error": null
+    },
+    {
+      "test_id": "bypass-pad-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi with 8KB leading junk padding",
+      "error": null
+    },
+    {
+      "test_id": "bypass-pad-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "XSS with large multipart padding before payload",
+      "error": null
+    },
+    {
+      "test_id": "bypass-pad-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi padded with JSON noise fields",
+      "error": null
+    },
+    {
+      "test_id": "bypass-chunk-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi split across chunked transfer encoding",
+      "error": null
+    },
+    {
+      "test_id": "bypass-chunk-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Chunked TE with chunk extension comments",
+      "error": null
+    },
+    {
+      "test_id": "bypass-chunk-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 0,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Double Transfer-Encoding header (TE.CL desync)",
+      "error": "Only Transfer-Encoding: chunked is supported"
+    },
+    {
+      "test_id": "bypass-ct-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi with charset=ibm500 Content-Type",
+      "error": null
+    },
+    {
+      "test_id": "bypass-ct-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "JSON body with text/plain Content-Type",
+      "error": null
+    },
+    {
+      "test_id": "bypass-ct-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "XSS payload with application/octet-stream",
+      "error": null
+    },
+    {
+      "test_id": "bypass-hpp-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Duplicate parameter with SQLi in second value",
+      "error": null
+    },
+    {
+      "test_id": "bypass-hpp-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Duplicate params with different casings",
+      "error": null
+    },
+    {
+      "test_id": "bypass-hpp-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Array-style param with injection",
+      "error": null
+    },
+    {
+      "test_id": "bypass-hpp-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "POST body HPP with injection in later param",
+      "error": null
+    },
+    {
+      "test_id": "bypass-param-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "JSON prototype pollution via constructor.prototype",
+      "error": null
+    },
+    {
+      "test_id": "bypass-param-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "JSON key with Unicode escape hiding SQLi",
+      "error": null
+    },
+    {
+      "test_id": "bypass-param-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Nested JSON with deeply buried injection",
+      "error": null
+    },
+    {
+      "test_id": "bypass-param-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "XML attribute parameter injection",
+      "error": null
+    },
+    {
+      "test_id": "bypass-mixed-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi in query string while body has safe data",
+      "error": null
+    },
+    {
+      "test_id": "bypass-poly-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SSTI + SQLi polyglot",
+      "error": null
+    },
+    {
+      "test_id": "bypass-poly-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "XXE + SSRF polyglot",
+      "error": null
+    },
+    {
+      "test_id": "bypass-poly-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "Deserialization + command injection polyglot (Java)",
+      "error": null
+    },
+    {
+      "test_id": "bypass-poly-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "JSON injection + NoSQL + SQLi polyglot",
+      "error": null
+    },
+    {
+      "test_id": "bypass-vendor-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi with scientific notation and LIKE",
+      "error": null
+    },
+    {
+      "test_id": "bypass-vendor-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "WAF Bypass",
+      "title": "SQLi with HANDLER statement (MySQL)",
+      "error": null
+    },
+    {
+      "test_id": "xss-add-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS via fetch() exfiltration",
+      "error": null
+    },
+    {
+      "test_id": "xss-add-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS via XMLHttpRequest",
+      "error": null
+    },
+    {
+      "test_id": "xss-add-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS via CSS expression (IE legacy)",
+      "error": null
+    },
+    {
+      "test_id": "xss-add-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS via base tag hijack",
+      "error": null
+    },
+    {
+      "test_id": "xss-add-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS via form action javascript",
+      "error": null
+    },
+    {
+      "test_id": "xss-add-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS via SVG foreignObject",
+      "error": null
+    },
+    {
+      "test_id": "xss-evasion-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "HTML entity encoding",
+      "error": null
+    },
+    {
+      "test_id": "xss-reflected-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "Script tag with document.cookie",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "Script tag in comment body",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "IMG tag in profile bio",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "Event handler in form field",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "Script in multipart file upload filename",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "XSS in JSON body via nested field",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "SVG with embedded script",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "Anchor tag with javascript protocol",
+      "error": null
+    },
+    {
+      "test_id": "xss-stored-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "Cross-Site Scripting",
+      "title": "Style tag with expression",
+      "error": null
+    },
+    {
+      "test_id": "xxe-001",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "Basic XXE - file read",
+      "error": null
+    },
+    {
+      "test_id": "xxe-002",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - /etc/shadow read",
+      "error": null
+    },
+    {
+      "test_id": "xxe-003",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - SSRF via HTTP",
+      "error": null
+    },
+    {
+      "test_id": "xxe-004",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "Blind XXE - out-of-band exfiltration",
+      "error": null
+    },
+    {
+      "test_id": "xxe-005",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - parameter entity",
+      "error": null
+    },
+    {
+      "test_id": "xxe-006",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - PHP expect wrapper",
+      "error": null
+    },
+    {
+      "test_id": "xxe-007",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - billion laughs (DoS)",
+      "error": null
+    },
+    {
+      "test_id": "xxe-008",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE via SVG upload",
+      "error": null
+    },
+    {
+      "test_id": "xxe-009",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE in SOAP request",
+      "error": null
+    },
+    {
+      "test_id": "xxe-010",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE via XInclude",
+      "error": null
+    },
+    {
+      "test_id": "xxe-011",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - UTF-7 encoded",
+      "error": null
+    },
+    {
+      "test_id": "xxe-012",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - file:// protocol",
+      "error": null
+    },
+    {
+      "test_id": "xxe-013",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - PHP php://filter",
+      "error": null
+    },
+    {
+      "test_id": "xxe-014",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - FTP out-of-band",
+      "error": null
+    },
+    {
+      "test_id": "xxe-015",
+      "expected_action": "block",
+      "expected_status": 403,
+      "actual_status": 200,
+      "encoding": "plain",
+      "category": "XML External Entities",
+      "title": "XXE - jar protocol (Java)",
+      "error": null
+    }
+  ]
+}

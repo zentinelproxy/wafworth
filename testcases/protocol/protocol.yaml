@@ -1,0 +1,275 @@
+meta:
+  category: "Protocol Attacks"
+  subcategory: "HTTP Smuggling and Method Attacks"
+  owasp: "A05:2021, WSTG-CONF-10"
+  severity: "high"
+
+tests:
+  - id: "protocol-001"
+    title: "HTTP request smuggling CL.TE"
+    tags: ["protocol", "smuggling", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+        Content-Length: "6"
+        Transfer-Encoding: "chunked"
+      body: "0\r\n\r\nG"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-002"
+    title: "HTTP request smuggling TE.CL"
+    tags: ["protocol", "smuggling", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+        Transfer-Encoding: "chunked"
+        Content-Length: "3"
+      body: "8\r\nSMUGGLED\r\n0\r\n\r\n"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-003"
+    title: "Transfer-Encoding obfuscation"
+    tags: ["protocol", "smuggling", "evasion", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+        Transfer-Encoding: " chunked"
+      body: "0\r\n\r\n"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-004"
+    title: "TRACE method"
+    tags: ["protocol", "method", "paranoia-1"]
+    request:
+      method: "TRACE"
+      path: "/api/data"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-005"
+    title: "CONNECT method"
+    tags: ["protocol", "method", "paranoia-1"]
+    request:
+      method: "CONNECT"
+      path: "evil.com:443"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-006"
+    title: "HTTP header injection via CRLF"
+    tags: ["protocol", "crlf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/redirect"
+      query_string: "url=http://example.com%0d%0aX-Injected: true"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-007"
+    title: "Response splitting via CRLF"
+    tags: ["protocol", "crlf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/redirect"
+      query_string: "url=http://example.com%0d%0a%0d%0a<html>injected</html>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-008"
+    title: "Host header injection"
+    tags: ["protocol", "header", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        Host: "evil.com"
+        X-Forwarded-Host: "evil.com"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-009"
+    title: "X-Forwarded-For header spoofing"
+    tags: ["protocol", "header", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/admin"
+      headers:
+        X-Forwarded-For: "127.0.0.1"
+        X-Real-IP: "127.0.0.1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-010"
+    title: "Oversized header value"
+    tags: ["protocol", "dos", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        X-Custom: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-011"
+    title: "Multiple Content-Type headers"
+    tags: ["protocol", "header", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"data":"test"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "protocol-012"
+    title: "HTTP verb tampering - method override"
+    tags: ["protocol", "method", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/admin/delete"
+      headers:
+        X-HTTP-Method-Override: "DELETE"
+        Content-Type: "application/json"
+      body: '{"id":1}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-013"
+    title: "Large request body (potential DoS)"
+    tags: ["protocol", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+        Content-Length: "999999999"
+      body: '{"data":"x"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-014"
+    title: "Null byte in URL"
+    tags: ["protocol", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data%00.html"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-015"
+    title: "URL with backslash"
+    tags: ["protocol", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api\\admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "protocol-016"
+    title: "Double URL in path"
+    tags: ["protocol", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/proxy"
+      query_string: "url=http://evil.com@169.254.169.254/"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "protocol-fp-001"
+    title: "False positive - normal GET request"
+    tags: ["protocol", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      headers:
+        Accept: "application/json"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "protocol-fp-002"
+    title: "False positive - normal POST with JSON"
+    tags: ["protocol", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/users"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"John","email":"john@example.com"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "protocol-fp-003"
+    title: "False positive - PUT request"
+    tags: ["protocol", "false-positive"]
+    request:
+      method: "PUT"
+      path: "/api/users/123"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"Jane"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "protocol-fp-004"
+    title: "False positive - DELETE request"
+    tags: ["protocol", "false-positive"]
+    request:
+      method: "DELETE"
+      path: "/api/users/123"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "protocol-fp-005"
+    title: "False positive - OPTIONS preflight"
+    tags: ["protocol", "false-positive"]
+    request:
+      method: "OPTIONS"
+      path: "/api/users"
+      headers:
+        Origin: "https://frontend.example.com"
+        Access-Control-Request-Method: "POST"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "protocol-fp-006"
+    title: "False positive - HEAD request"
+    tags: ["protocol", "false-positive"]
+    request:
+      method: "HEAD"
+      path: "/api/health"
+    expected:
+      status: 200
+      action: "allow"

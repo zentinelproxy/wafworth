@@ -1,0 +1,15 @@
+services:
+  zentinel:
+    image: ghcr.io/zentinelproxy/zentinel:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./proxy.kdl:/etc/zentinel/proxy.kdl:ro
+    depends_on:
+      - backend
+
+  backend:
+    image: nginx:alpine
+
+  # Run tests:
+  #   waf-playbook run --target http://localhost:8080 --name zentinel --block-status 403

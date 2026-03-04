@@ -1,0 +1,116 @@
+meta:
+  category: "SQL Injection"
+  subcategory: "Blind"
+  owasp: "A03:2021, WSTG-INPV-05"
+  severity: "critical"
+
+tests:
+  - id: "sqli-blind-001"
+    title: "Boolean-based blind - AND 1=1"
+    tags: ["sqli", "blind", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND 1=1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-002"
+    title: "Boolean-based blind - AND 1=2"
+    tags: ["sqli", "blind", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND 1=2"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-003"
+    title: "Boolean-based with SUBSTRING"
+    tags: ["sqli", "blind", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND SUBSTRING(username,1,1)='a'"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-004"
+    title: "Boolean-based with ASCII/CHAR"
+    tags: ["sqli", "blind", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1))>64"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-005"
+    title: "Time-based blind - SLEEP"
+    tags: ["sqli", "blind", "time-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND SLEEP(5)--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-006"
+    title: "Time-based blind - BENCHMARK"
+    tags: ["sqli", "blind", "time-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND BENCHMARK(10000000,MD5('test'))--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-007"
+    title: "Time-based blind - WAITFOR DELAY (MSSQL)"
+    tags: ["sqli", "blind", "time-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1; WAITFOR DELAY '0:0:5'--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-008"
+    title: "Time-based blind - pg_sleep (PostgreSQL)"
+    tags: ["sqli", "blind", "time-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1; SELECT pg_sleep(5)--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-009"
+    title: "Boolean-based with IF()"
+    tags: ["sqli", "blind", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=IF(1=1,1,(SELECT 1 FROM (SELECT SLEEP(5))a))"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-blind-010"
+    title: "Boolean-based with CASE WHEN"
+    tags: ["sqli", "blind", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND (CASE WHEN (1=1) THEN 1 ELSE 0 END)=1"
+    expected:
+      status: 403
+      action: "block"

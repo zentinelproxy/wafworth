@@ -1,0 +1,241 @@
+meta:
+  category: "False Positives"
+  subcategory: "Additional Legitimate Traffic"
+  owasp: "N/A"
+  severity: "info"
+
+tests:
+  # --- Webhook and integration payloads ---
+
+  - id: "fp-add-001"
+    title: "GitHub webhook push event"
+    tags: ["false-positive", "webhook"]
+    request:
+      method: "POST"
+      path: "/api/webhooks/github"
+      headers:
+        Content-Type: "application/json"
+        X-GitHub-Event: "push"
+        X-GitHub-Delivery: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      body: '{"ref":"refs/heads/main","before":"abc123","after":"def456","repository":{"full_name":"org/repo","url":"https://github.com/org/repo"},"pusher":{"name":"developer","email":"dev@company.com"},"commits":[{"id":"def456","message":"Fix null pointer in user_service.rb","timestamp":"2026-03-01T10:30:00Z","url":"https://github.com/org/repo/commit/def456","author":{"name":"developer","email":"dev@company.com"},"added":[],"removed":[],"modified":["src/user_service.rb"]}]}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-002"
+    title: "Stripe webhook payment event"
+    tags: ["false-positive", "webhook"]
+    request:
+      method: "POST"
+      path: "/api/webhooks/stripe"
+      headers:
+        Content-Type: "application/json"
+        Stripe-Signature: "t=1709280600,v1=abc123def456"
+      body: '{"id":"evt_1234","type":"payment_intent.succeeded","data":{"object":{"id":"pi_abc123","amount":4999,"currency":"usd","status":"succeeded","description":"Order #12345 - Widget Pro (x2)"}}}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- OAuth and authentication flows ---
+
+  - id: "fp-add-003"
+    title: "OAuth2 token exchange"
+    tags: ["false-positive", "auth"]
+    request:
+      method: "POST"
+      path: "/oauth/token"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+        Authorization: "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ="
+      body: "grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fapp.example.com%2Fcallback&code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-004"
+    title: "SAML assertion POST"
+    tags: ["false-positive", "auth"]
+    request:
+      method: "POST"
+      path: "/api/auth/saml/callback"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "SAMLResponse=PHNhbWxwOlJlc3BvbnNlIHhtbG5zOnNhbWxwPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6cHJvdG9jb2wiPg%3D%3D&RelayState=%2Fdashboard"
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Mathematical and scientific content ---
+
+  - id: "fp-add-005"
+    title: "Mathematical formula with operators"
+    tags: ["false-positive", "math"]
+    request:
+      method: "POST"
+      path: "/api/calculations"
+      headers:
+        Content-Type: "application/json"
+      body: '{"expression":"(x + y) * z / (a - b)","variables":{"x":10,"y":20,"z":3,"a":100,"b":50},"format":"latex","note":"Calculate where x > 0 AND y < 100 OR z = 3"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-006"
+    title: "Scientific data with special notation"
+    tags: ["false-positive", "math"]
+    request:
+      method: "POST"
+      path: "/api/datasets"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"Experiment 2026-Q1","measurements":[{"temp":22.5,"pressure":1.013e5,"ph":7.4,"notes":"Sample A: concentration = 0.5mol/L; Sample B: concentration = 1.0mol/L"},{"temp":25.0,"pressure":1.015e5,"ph":6.8,"notes":"Combined A+B: expected yield > 95% (p < 0.05)"}]}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- CMS and rich content ---
+
+  - id: "fp-add-007"
+    title: "CMS page update with embedded HTML"
+    tags: ["false-positive", "cms"]
+    request:
+      method: "PUT"
+      path: "/api/pages/about-us"
+      headers:
+        Content-Type: "application/json"
+      body: '{"title":"About Us","content":"<h1>Our Company</h1><p>Founded in 2020, we serve <strong>500+</strong> customers worldwide.</p><ul><li>Enterprise solutions</li><li>24/7 support</li></ul><p>Contact us at <a href=\"mailto:info@company.com\">info@company.com</a></p>","status":"published"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-008"
+    title: "Markdown content with code blocks"
+    tags: ["false-positive", "cms"]
+    request:
+      method: "POST"
+      path: "/api/articles"
+      headers:
+        Content-Type: "application/json"
+      body: '{"title":"Getting Started Guide","body":"# Installation\n\nRun the following command:\n\n```bash\ncurl -fsSL https://get.example.com | sh\n```\n\nThen configure your environment:\n\n```\nexport API_KEY=your_key_here\nexport DB_HOST=localhost\n```\n\nTo verify, run `echo $API_KEY` and check the output.","tags":["tutorial","setup"]}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Complex API patterns ---
+
+  - id: "fp-add-009"
+    title: "ElasticSearch-like query DSL"
+    tags: ["false-positive", "api"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":{"bool":{"must":[{"match":{"title":"database"}},{"range":{"date":{"gte":"2026-01-01","lte":"2026-03-04"}}}],"should":[{"term":{"status":"published"}},{"term":{"status":"draft"}}],"must_not":[{"term":{"deleted":true}}]}},"from":0,"size":20,"sort":[{"date":"desc"}]}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-010"
+    title: "GraphQL mutation with nested input"
+    tags: ["false-positive", "api"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"mutation CreateOrder($input: OrderInput!) { createOrder(input: $input) { id status total items { productId quantity price } } }","variables":{"input":{"customerId":"cust_123","items":[{"productId":"prod_456","quantity":2},{"productId":"prod_789","quantity":1}],"shippingAddress":{"street":"742 Evergreen Terrace","city":"Springfield","state":"IL","zip":"62704"},"paymentMethod":"pm_card_visa"}}}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Logging and monitoring payloads ---
+
+  - id: "fp-add-011"
+    title: "Application log entry with stack trace"
+    tags: ["false-positive", "logging"]
+    request:
+      method: "POST"
+      path: "/api/logs"
+      headers:
+        Content-Type: "application/json"
+      body: '{"level":"error","service":"api-gateway","timestamp":"2026-03-04T14:30:00Z","message":"NullPointerException in UserService.getUser()","stacktrace":"java.lang.NullPointerException\n\tat com.app.UserService.getUser(UserService.java:42)\n\tat com.app.UserController.handleRequest(UserController.java:18)\n\tat org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:897)","context":{"userId":"user_123","requestPath":"/api/users/123","method":"GET"}}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-012"
+    title: "Sentry error report with exception details"
+    tags: ["false-positive", "logging"]
+    request:
+      method: "POST"
+      path: "/api/errors"
+      headers:
+        Content-Type: "application/json"
+      body: '{"exception":{"type":"ConnectionError","value":"Connection refused: connect() to /var/run/postgresql/.s.PGSQL.5432 failed","module":"psycopg2"},"tags":{"environment":"production","server_name":"web-01"},"extra":{"sql_query":"SELECT id, name FROM users WHERE active = true ORDER BY created_at DESC LIMIT 10","connection_pool_size":20,"active_connections":20}}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- File and data operations ---
+
+  - id: "fp-add-013"
+    title: "CSV data upload with special characters"
+    tags: ["false-positive", "data"]
+    request:
+      method: "POST"
+      path: "/api/import/csv"
+      headers:
+        Content-Type: "text/csv"
+      body: "name,email,company,notes\nJohn O'Brien,john@test.com,\"Smith & Sons, Inc.\",\"Great customer; referred by Jane\"\nMaria Garcia-Lopez,maria@empresa.es,Cafe Creme S.L.,\"VIP client (>$10k/year)\"\nLi Wei,li.wei@example.cn,Tech Co.,\"Contact re: order #12345\""
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-014"
+    title: "Configuration update with path-like values"
+    tags: ["false-positive", "config"]
+    request:
+      method: "PUT"
+      path: "/api/config"
+      headers:
+        Content-Type: "application/json"
+      body: '{"database":{"host":"db.internal.example.com","port":5432,"name":"myapp_production","pool_size":25},"storage":{"base_path":"/var/data/uploads","temp_dir":"/tmp/processing","max_file_size":"50MB"},"logging":{"level":"info","output":"/var/log/app/server.log","rotation":"daily"}}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Browser and client patterns ---
+
+  - id: "fp-add-015"
+    title: "CORS preflight from legitimate SPA"
+    tags: ["false-positive", "cors"]
+    request:
+      method: "OPTIONS"
+      path: "/api/users"
+      headers:
+        Origin: "https://app.example.com"
+        Access-Control-Request-Method: "PUT"
+        Access-Control-Request-Headers: "Content-Type, Authorization, X-Request-ID"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-add-016"
+    title: "Service-to-service request with tracing headers"
+    tags: ["false-positive", "internal"]
+    request:
+      method: "POST"
+      path: "/api/internal/process"
+      headers:
+        Content-Type: "application/json"
+        X-Request-ID: "req-a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        X-Correlation-ID: "corr-f0e1d2c3-b4a5-6789-0123-456789abcdef"
+        X-Forwarded-For: "10.0.1.50"
+        X-B3-TraceId: "463ac35c9f6413ad48485a3953bb6124"
+        X-B3-SpanId: "0020000000000001"
+        User-Agent: "order-service/2.1.0"
+      body: '{"action":"validate_inventory","items":[{"sku":"WIDGET-001","quantity":5},{"sku":"GADGET-042","quantity":2}],"warehouse":"us-east-1","priority":"normal"}'
+    expected:
+      status: 200
+      action: "allow"

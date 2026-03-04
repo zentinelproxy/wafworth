@@ -1,0 +1,79 @@
+// WAF agent test config (localhost, UDS)
+system {
+    worker-threads 0
+    max-connections 10000
+}
+
+listeners {
+    listener "http" {
+        address "127.0.0.1:18080"
+        protocol "http"
+        request-timeout-secs 60
+    }
+}
+
+agents {
+    agent "waf" {
+        unix-socket path="/tmp/zentinel-waf-test.sock"
+        timeout-ms 5000
+        failure-mode "closed"
+        max-request-body-bytes 1048576
+
+        config {
+            paranoia-level 1
+            sqli #true
+            xss #true
+            path-traversal #true
+            command-injection #true
+            protocol #true
+            scanner-detection #true
+            block-mode #true
+            body-inspection #true
+            exclude-paths "/health"
+        }
+    }
+}
+
+filters {
+    filter "waf-filter" {
+        type "agent"
+        agent "waf"
+        timeout-ms 5000
+        failure-mode "closed"
+        inspect-body #true
+        max-body-bytes 1048576
+    }
+}
+
+routes {
+    route "health" {
+        priority 100
+        matches {
+            path "/health"
+        }
+        upstream "backend"
+    }
+
+    route "protected" {
+        priority 1
+        matches {
+            path-prefix "/"
+        }
+        upstream "backend"
+        filters "waf-filter"
+    }
+}
+
+upstreams {
+    upstream "backend" {
+        target "127.0.0.1:19090" weight=1
+        load-balancing "round_robin"
+    }
+}
+
+observability {
+    logging {
+        level "warn"
+        format "json"
+    }
+}

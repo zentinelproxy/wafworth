@@ -1,0 +1,124 @@
+meta:
+  category: "Path Traversal"
+  subcategory: "Advanced LFI/RFI"
+  owasp: "A01:2021, WSTG-ATHZ-01"
+  severity: "high"
+
+tests:
+  - id: "traversal-adv-001"
+    title: "Traversal to SSH private key"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../../root/.ssh/id_rsa"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-002"
+    title: "Traversal to Docker socket"
+    tags: ["traversal", "lfi", "container", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../../var/run/docker.sock"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-003"
+    title: "Traversal in multipart upload filename"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../../etc/crontab\"\r\nContent-Type: application/octet-stream\r\n\r\nmalicious\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-004"
+    title: "Traversal in Cookie header value"
+    tags: ["traversal", "lfi", "header", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/dashboard"
+      headers:
+        Cookie: "template=../../../../etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-005"
+    title: "PHP input wrapper for code execution"
+    tags: ["traversal", "rfi", "php", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/include"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      query_string: "page=php://input"
+      body: "<?php system('id'); ?>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-006"
+    title: "Traversal to Kubernetes service account token"
+    tags: ["traversal", "lfi", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../../var/run/secrets/kubernetes.io/serviceaccount/token"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-007"
+    title: "Traversal via ZIP slip pattern"
+    tags: ["traversal", "lfi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../../../../../tmp/evil.sh\"\r\nContent-Type: application/octet-stream\r\n\r\n#!/bin/sh\nid\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-008"
+    title: "Traversal to .env file"
+    tags: ["traversal", "lfi", "secrets", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=../../../.env"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-009"
+    title: "Traversal with URL-encoded null followed by extension"
+    tags: ["traversal", "lfi", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/download"
+      query_string: "file=....//....//....//etc/shadow%00.png"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "traversal-adv-010"
+    title: "Traversal to GCP metadata via file scheme"
+    tags: ["traversal", "rfi", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/include"
+      query_string: "page=file:///etc/google_cloud/credentials.json"
+    expected:
+      status: 403
+      action: "block"

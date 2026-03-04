@@ -1,0 +1,15 @@
+services:
+  coraza:
+    image: caddy:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - backend
+
+  backend:
+    image: nginx:alpine
+
+  # Run tests:
+  #   waf-playbook run --target http://localhost:8080 --name coraza --block-status 403

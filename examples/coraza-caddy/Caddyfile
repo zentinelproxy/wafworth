@@ -1,0 +1,12 @@
+:8080 {
+    route {
+        coraza_waf {
+            load_owasp_crs
+            directives `
+                SecRuleEngine On
+                SecRequestBodyAccess On
+            `
+        }
+        reverse_proxy backend:80
+    }
+}

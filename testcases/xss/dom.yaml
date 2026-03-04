@@ -1,0 +1,94 @@
+meta:
+  category: "Cross-Site Scripting"
+  subcategory: "DOM-based XSS"
+  owasp: "A03:2021, WSTG-CLNT-01"
+  severity: "high"
+
+tests:
+  - id: "xss-dom-001"
+    title: "Fragment-based XSS with script tag"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "input=<script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-002"
+    title: "innerHTML injection via parameter"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "name=<img/src=x onerror=alert(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-003"
+    title: "document.write injection"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "msg=<script>document.write('<img src=x onerror=alert(1)>')</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-004"
+    title: "eval injection via parameter"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "callback=alert(document.domain)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-005"
+    title: "setTimeout injection"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "delay=0);alert(document.cookie)//"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-006"
+    title: "location.hash injection"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "redirect=javascript:alert(1)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-007"
+    title: "Template literal injection"
+    tags: ["xss", "dom", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "name=${alert(1)}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-dom-008"
+    title: "postMessage XSS"
+    tags: ["xss", "dom", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "data=<script>window.postMessage('<img src=x onerror=alert(1)>','*')</script>"
+    expected:
+      status: 403
+      action: "block"

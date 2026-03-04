@@ -1,0 +1,125 @@
+meta:
+  category: "ReDoS"
+  subcategory: "Regular Expression Denial of Service"
+  owasp: "WSTG-INPV-15"
+  severity: "high"
+
+tests:
+  # --- OWASP Testing Guide: WSTG-INPV-15 (HTTP Incoming Requests) ---
+  # Payloads designed to trigger catastrophic backtracking in regex-based WAF rules
+
+  - id: "redos-001"
+    title: "Exponential backtracking via nested quantifiers (a{n})"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-002"
+    title: "Long repeating pattern for email validation bypass"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/register"
+      content_type: "application/json"
+      body: '{"email":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-003"
+    title: "Nested group with alternation ReDoS"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/validate"
+      query_string: "input=(a|a)*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-004"
+    title: "URL-like pattern for path regex exhaustion"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/proxy"
+      query_string: "url=http://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-005"
+    title: "Oversized header value for header regex"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) AppleWebKit/537.36"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-006"
+    title: "Deep nested JSON for JSON parsing DoS"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      content_type: "application/json"
+      body: '{"a":{"b":{"c":{"d":{"e":{"f":{"g":{"h":{"i":{"j":{"k":{"l":{"m":{"n":{"o":{"p":{"q":{"r":{"s":{"t":"deep"}}}}}}}}}}}}}}}}}}}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-007"
+    title: "XML bomb (Billion Laughs)"
+    tags: ["redos", "dos", "xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/parse"
+      content_type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;"><!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;"><!ENTITY lol4 "&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;&lol3;">]><root>&lol4;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-008"
+    title: "JSON key bomb"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      content_type: "application/json"
+      body: '{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1":1,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa2":2,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa3":3,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa4":4}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-009"
+    title: "Oversized query string for URL parsing DoS"
+    tags: ["redos", "dos", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%26b=cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "redos-010"
+    title: "GraphQL query depth bomb"
+    tags: ["redos", "dos", "api", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      content_type: "application/json"
+      body: '{"query":"{ users { friends { friends { friends { friends { friends { friends { friends { friends { friends { friends { name } } } } } } } } } } } }"}'
+    expected:
+      status: 403
+      action: "block"

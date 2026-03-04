@@ -1,0 +1,658 @@
+{
+  "meta": {
+    "timestamp": "2026-03-04T11:03:47.787384+00:00",
+    "targets": [
+      "zentinel-waf",
+      "zentinel-zentinelsec",
+      "zentinel-modsec"
+    ],
+    "categories": [
+      "API Security",
+      "Authentication Attacks",
+      "Command Injection",
+      "Cross-Site Scripting",
+      "Deserialization",
+      "Evasion Techniques",
+      "False Positives",
+      "File Upload",
+      "Known CVEs",
+      "Path Traversal",
+      "Protocol Attacks",
+      "ReDoS",
+      "SQL Injection",
+      "Scanner Detection",
+      "Server-Side Request Forgery",
+      "Server-Side Template Injection",
+      "WAF Bypass",
+      "XML External Entities"
+    ]
+  },
+  "overall": {
+    "zentinel-waf": {
+      "total_tests": 598,
+      "passed": 316,
+      "detection_rate": 0.43067226890756305,
+      "false_positive_rate": 0.09016393442622951,
+      "precision": 0.9490740740740741,
+      "f1": 0.5924855491329479,
+      "balanced_accuracy": 0.6702541672406668,
+      "latency": {
+        "p50_ms": 2.49,
+        "p95_ms": 2.77,
+        "p99_ms": 3.04,
+        "mean_ms": 2.48,
+        "max_ms": 5.32
+      }
+    },
+    "zentinel-zentinelsec": {
+      "total_tests": 598,
+      "passed": 303,
+      "detection_rate": 0.3865546218487395,
+      "false_positive_rate": 0.02459016393442623,
+      "precision": 0.983957219251337,
+      "f1": 0.5550527903469079,
+      "balanced_accuracy": 0.6809822289571567,
+      "latency": {
+        "p50_ms": 2.59,
+        "p95_ms": 3.13,
+        "p99_ms": 3.6,
+        "mean_ms": 2.61,
+        "max_ms": 6.43
+      }
+    },
+    "zentinel-modsec": {
+      "total_tests": 598,
+      "passed": 272,
+      "detection_rate": 0.32142857142857145,
+      "false_positive_rate": 0.02459016393442623,
+      "precision": 0.9807692307692307,
+      "f1": 0.4841772151898734,
+      "balanced_accuracy": 0.6484192037470726,
+      "latency": {
+        "p50_ms": 2.54,
+        "p95_ms": 2.87,
+        "p99_ms": 3.49,
+        "mean_ms": 2.55,
+        "max_ms": 7.39
+      }
+    }
+  },
+  "by_category": {
+    "API Security": {
+      "zentinel-waf": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 8,
+          "fn": 20
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 8,
+          "fn": 20
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 8,
+          "fn": 20
+        }
+      }
+    },
+    "Authentication Attacks": {
+      "zentinel-waf": {
+        "detection_rate": 0.2,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 4,
+          "fp": 0,
+          "tn": 0,
+          "fn": 16
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.2,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 4,
+          "fp": 0,
+          "tn": 0,
+          "fn": 16
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.2,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 4,
+          "fp": 0,
+          "tn": 0,
+          "fn": 16
+        }
+      }
+    },
+    "Command Injection": {
+      "zentinel-waf": {
+        "detection_rate": 0.03333333333333333,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 8,
+          "fn": 29
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.03333333333333333,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 8,
+          "fn": 29
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.03333333333333333,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 8,
+          "fn": 29
+        }
+      }
+    },
+    "Cross-Site Scripting": {
+      "zentinel-waf": {
+        "detection_rate": 0.7333333333333333,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 44,
+          "fp": 0,
+          "tn": 2,
+          "fn": 16
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.7,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 42,
+          "fp": 0,
+          "tn": 2,
+          "fn": 18
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.7,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 42,
+          "fp": 0,
+          "tn": 2,
+          "fn": 18
+        }
+      }
+    },
+    "Deserialization": {
+      "zentinel-waf": {
+        "detection_rate": 0.08333333333333333,
+        "false_positive_rate": 0.3333333333333333,
+        "confusion_matrix": {
+          "tp": 1,
+          "fp": 1,
+          "tn": 2,
+          "fn": 11
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 3,
+          "fn": 12
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 3,
+          "fn": 12
+        }
+      }
+    },
+    "Evasion Techniques": {
+      "zentinel-waf": {
+        "detection_rate": 0.24,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 6,
+          "fp": 0,
+          "tn": 5,
+          "fn": 19
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.52,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 13,
+          "fp": 0,
+          "tn": 5,
+          "fn": 12
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.48,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 12,
+          "fp": 0,
+          "tn": 5,
+          "fn": 13
+        }
+      }
+    },
+    "False Positives": {
+      "zentinel-waf": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.04,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 2,
+          "tn": 48,
+          "fn": 0
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.02,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 49,
+          "fn": 0
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.02,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 1,
+          "tn": 49,
+          "fn": 0
+        }
+      }
+    },
+    "File Upload": {
+      "zentinel-waf": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 15
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 15
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 15
+        }
+      }
+    },
+    "Known CVEs": {
+      "zentinel-waf": {
+        "detection_rate": 0.5405405405405406,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 20,
+          "fp": 0,
+          "tn": 6,
+          "fn": 17
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.1891891891891892,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 7,
+          "fp": 0,
+          "tn": 6,
+          "fn": 30
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.16216216216216217,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 6,
+          "fp": 0,
+          "tn": 6,
+          "fn": 31
+        }
+      }
+    },
+    "Path Traversal": {
+      "zentinel-waf": {
+        "detection_rate": 0.8,
+        "false_positive_rate": 0.125,
+        "confusion_matrix": {
+          "tp": 24,
+          "fp": 1,
+          "tn": 7,
+          "fn": 6
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.5,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 15,
+          "fp": 0,
+          "tn": 8,
+          "fn": 15
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.5333333333333333,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 16,
+          "fp": 0,
+          "tn": 8,
+          "fn": 14
+        }
+      }
+    },
+    "Protocol Attacks": {
+      "zentinel-waf": {
+        "detection_rate": 0.3157894736842105,
+        "false_positive_rate": 0.14285714285714285,
+        "confusion_matrix": {
+          "tp": 6,
+          "fp": 1,
+          "tn": 6,
+          "fn": 13
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.10526315789473684,
+        "false_positive_rate": 0.14285714285714285,
+        "confusion_matrix": {
+          "tp": 2,
+          "fp": 1,
+          "tn": 6,
+          "fn": 17
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.05263157894736842,
+        "false_positive_rate": 0.14285714285714285,
+        "confusion_matrix": {
+          "tp": 1,
+          "fp": 1,
+          "tn": 6,
+          "fn": 18
+        }
+      }
+    },
+    "ReDoS": {
+      "zentinel-waf": {
+        "detection_rate": 0.2,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 2,
+          "fp": 0,
+          "tn": 0,
+          "fn": 8
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 10
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 10
+        }
+      }
+    },
+    "SQL Injection": {
+      "zentinel-waf": {
+        "detection_rate": 0.375,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 27,
+          "fp": 0,
+          "tn": 3,
+          "fn": 45
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.6666666666666666,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 48,
+          "fp": 0,
+          "tn": 3,
+          "fn": 24
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.25,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 18,
+          "fp": 0,
+          "tn": 3,
+          "fn": 54
+        }
+      }
+    },
+    "Scanner Detection": {
+      "zentinel-waf": {
+        "detection_rate": 0.8,
+        "false_positive_rate": 0.5,
+        "confusion_matrix": {
+          "tp": 12,
+          "fp": 5,
+          "tn": 5,
+          "fn": 3
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.06666666666666667,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 1,
+          "fp": 0,
+          "tn": 10,
+          "fn": 14
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.3333333333333333,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 5,
+          "fp": 0,
+          "tn": 10,
+          "fn": 10
+        }
+      }
+    },
+    "Server-Side Request Forgery": {
+      "zentinel-waf": {
+        "detection_rate": 0.8,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 12,
+          "fp": 0,
+          "tn": 5,
+          "fn": 3
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.6,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 9,
+          "fp": 0,
+          "tn": 5,
+          "fn": 6
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.6,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 9,
+          "fp": 0,
+          "tn": 5,
+          "fn": 6
+        }
+      }
+    },
+    "Server-Side Template Injection": {
+      "zentinel-waf": {
+        "detection_rate": 0.6,
+        "false_positive_rate": 0.3333333333333333,
+        "confusion_matrix": {
+          "tp": 9,
+          "fp": 1,
+          "tn": 2,
+          "fn": 6
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.5333333333333333,
+        "false_positive_rate": 0.3333333333333333,
+        "confusion_matrix": {
+          "tp": 8,
+          "fp": 1,
+          "tn": 2,
+          "fn": 7
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.4666666666666667,
+        "false_positive_rate": 0.3333333333333333,
+        "confusion_matrix": {
+          "tp": 7,
+          "fp": 1,
+          "tn": 2,
+          "fn": 8
+        }
+      }
+    },
+    "WAF Bypass": {
+      "zentinel-waf": {
+        "detection_rate": 0.5606060606060606,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 37,
+          "fp": 0,
+          "tn": 0,
+          "fn": 29
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.5151515151515151,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 34,
+          "fp": 0,
+          "tn": 0,
+          "fn": 32
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.48484848484848486,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 32,
+          "fp": 0,
+          "tn": 0,
+          "fn": 34
+        }
+      }
+    },
+    "XML External Entities": {
+      "zentinel-waf": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 4,
+          "fn": 15
+        }
+      },
+      "zentinel-zentinelsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 4,
+          "fn": 15
+        }
+      },
+      "zentinel-modsec": {
+        "detection_rate": 0.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 4,
+          "fn": 15
+        }
+      }
+    }
+  }
+}

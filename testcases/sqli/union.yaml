@@ -1,0 +1,118 @@
+meta:
+  category: "SQL Injection"
+  subcategory: "UNION-based"
+  owasp: "A03:2021, WSTG-INPV-05"
+  severity: "critical"
+
+tests:
+  - id: "sqli-union-001"
+    title: "Basic UNION SELECT"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT username,password FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-002"
+    title: "UNION ALL SELECT"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION ALL SELECT 1,2,3,4--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-003"
+    title: "UNION SELECT with NULL columns"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT NULL,NULL,NULL--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-004"
+    title: "UNION with information_schema"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT table_name,column_name FROM information_schema.columns--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-005"
+    title: "UNION SELECT with CONCAT"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT CONCAT(username,':',password) FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-006"
+    title: "UNION with GROUP_CONCAT"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT GROUP_CONCAT(table_name) FROM information_schema.tables--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-007"
+    title: "UNION SELECT column discovery"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT 1,2,3-- ORDER BY 4"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-008"
+    title: "UNION-based in POST body"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      headers:
+        Content-Type: "application/json"
+      body: '{"id":"1 UNION SELECT * FROM users--"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-009"
+    title: "UNION with LOAD_FILE"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT LOAD_FILE('/etc/passwd'),2--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-union-010"
+    title: "UNION with INTO OUTFILE"
+    tags: ["sqli", "union", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT '<?php system($_GET[c]);?>' INTO OUTFILE '/var/www/shell.php'--"
+    expected:
+      status: 403
+      action: "block"

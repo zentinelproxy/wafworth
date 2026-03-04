@@ -1,0 +1,233 @@
+meta:
+  category: "Authentication Attacks"
+  subcategory: "Credential and Session Attacks"
+  owasp: "WSTG-ATHN-03"
+  severity: "high"
+
+tests:
+  # --- OWASP Testing Guide: WSTG-ATHN (Authentication Testing) ---
+
+  # Brute force indicators
+  - id: "auth-brute-001"
+    title: "Common credential pair admin:admin"
+    tags: ["authentication", "brute-force", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      content_type: "application/json"
+      body: '{"username":"admin","password":"admin"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-brute-002"
+    title: "Common credential pair admin:password"
+    tags: ["authentication", "brute-force", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      content_type: "application/json"
+      body: '{"username":"admin","password":"password"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-brute-003"
+    title: "Common credential pair root:toor"
+    tags: ["authentication", "brute-force", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      content_type: "application/json"
+      body: '{"username":"root","password":"toor"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-brute-004"
+    title: "Common credential pair admin:123456"
+    tags: ["authentication", "brute-force", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      content_type: "application/json"
+      body: '{"username":"admin","password":"123456"}'
+    expected:
+      status: 403
+      action: "block"
+
+  # JWT attacks (OWASP WSTG-SESS-10)
+  - id: "auth-jwt-001"
+    title: "JWT with alg:none bypass"
+    tags: ["authentication", "jwt", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/admin"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoiYWRtaW4ifQ."
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-jwt-002"
+    title: "JWT with alg:None (capitalized) bypass"
+    tags: ["authentication", "jwt", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/admin"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJOb25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZSI6ImFkbWluIn0."
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-jwt-003"
+    title: "JWT algorithm confusion RS256 to HS256"
+    tags: ["authentication", "jwt", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/admin"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        X-Original-Algo: "RS256"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-jwt-004"
+    title: "JWT with JWK header injection"
+    tags: ["authentication", "jwt", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/admin"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImp3ayI6eyJrdHkiOiJSU0EiLCJuIjoiMEFiIiwiZSI6IkFRQUIifX0.eyJyb2xlIjoiYWRtaW4ifQ.fakesig"
+    expected:
+      status: 403
+      action: "block"
+
+  # Session fixation (OWASP WSTG-SESS-03)
+  - id: "auth-session-001"
+    title: "Session ID in URL parameter"
+    tags: ["authentication", "session-fixation", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/dashboard"
+      query_string: "JSESSIONID=abc123attackercontrolled"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-session-002"
+    title: "Session token in URL (PHPSESSID)"
+    tags: ["authentication", "session-fixation", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/admin"
+      query_string: "PHPSESSID=fixated_session_token_here"
+    expected:
+      status: 403
+      action: "block"
+
+  # Default/admin paths (OWASP WSTG-CONF-04)
+  - id: "auth-admin-001"
+    title: "WordPress admin login endpoint"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/wp-login.php"
+      content_type: "application/x-www-form-urlencoded"
+      body: "log=admin&pwd=admin&wp-submit=Log+In"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-002"
+    title: "phpMyAdmin default access"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/phpmyadmin/"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-003"
+    title: "Actuator endpoints exposure"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/actuator/env"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-004"
+    title: "Kubernetes dashboard access"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/v1/namespaces/kube-system/secrets"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-005"
+    title: "Debug/trace endpoint access"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "TRACE"
+      path: "/"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-006"
+    title: "Git metadata exposure"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/.git/config"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-007"
+    title: "Environment file exposure"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/.env"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-008"
+    title: "AWS credentials file"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/.aws/credentials"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-009"
+    title: "Docker socket exposure"
+    tags: ["authentication", "admin-path", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/var/run/docker.sock"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "auth-admin-010"
+    title: "Backup file exposure (.bak)"
+    tags: ["authentication", "admin-path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/config.php.bak"
+    expected:
+      status: 403
+      action: "block"

@@ -1,0 +1,211 @@
+meta:
+  category: "File Upload"
+  subcategory: "Malicious Upload Detection"
+  owasp: "WSTG-BUSL-08"
+  severity: "critical"
+
+tests:
+  # --- OWASP Testing Guide: WSTG-BUSL-08 (Upload of Unexpected File Types) ---
+  # --- OWASP Testing Guide: WSTG-BUSL-09 (Upload of Malicious Files) ---
+
+  # Webshell uploads
+  - id: "upload-001"
+    title: "PHP webshell upload in filename"
+    tags: ["file-upload", "webshell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----WebKitFormBoundary"
+      body: "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.php\"\r\nContent-Type: application/octet-stream\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------WebKitFormBoundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-002"
+    title: "JSP webshell upload"
+    tags: ["file-upload", "webshell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"cmd.jsp\"\r\nContent-Type: application/octet-stream\r\n\r\n<%Runtime.getRuntime().exec(request.getParameter(\"cmd\"));%>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-003"
+    title: "ASP webshell upload"
+    tags: ["file-upload", "webshell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"cmd.asp\"\r\nContent-Type: application/octet-stream\r\n\r\n<%eval request(\"cmd\")%>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  # Extension bypass techniques
+  - id: "upload-004"
+    title: "Double extension bypass (.php.jpg)"
+    tags: ["file-upload", "extension-bypass", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.php.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-005"
+    title: "Null byte extension bypass (.php%00.jpg)"
+    tags: ["file-upload", "extension-bypass", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.php%00.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-006"
+    title: "Alternative PHP extension (.phtml)"
+    tags: ["file-upload", "extension-bypass", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.phtml\"\r\nContent-Type: application/octet-stream\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-007"
+    title: "Case variation extension bypass (.pHp)"
+    tags: ["file-upload", "extension-bypass", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.pHp\"\r\nContent-Type: application/octet-stream\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-008"
+    title: "Trailing dot extension bypass (shell.php.)"
+    tags: ["file-upload", "extension-bypass", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.php.\"\r\nContent-Type: application/octet-stream\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  # Content-Type spoofing
+  - id: "upload-009"
+    title: "PHP shell with image/jpeg Content-Type"
+    tags: ["file-upload", "content-type-spoofing", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"avatar.php\"\r\nContent-Type: image/jpeg\r\n\r\n<?php passthru($_GET['c']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  # Path traversal in upload filename
+  - id: "upload-010"
+    title: "Path traversal in upload filename"
+    tags: ["file-upload", "traversal", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../../tmp/shell.php\"\r\nContent-Type: application/octet-stream\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  # SVG XSS upload
+  - id: "upload-011"
+    title: "SVG file with embedded JavaScript"
+    tags: ["file-upload", "xss", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"image.svg\"\r\nContent-Type: image/svg+xml\r\n\r\n<svg xmlns=\"http://www.w3.org/2000/svg\"><script>alert(document.cookie)</script></svg>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-012"
+    title: "HTML file upload with XSS"
+    tags: ["file-upload", "xss", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"page.html\"\r\nContent-Type: text/html\r\n\r\n<html><body><script>alert(1)</script></body></html>\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  # ZIP slip
+  - id: "upload-013"
+    title: "ZIP slip via crafted archive filename"
+    tags: ["file-upload", "zip-slip", "traversal", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../../etc/cron.d/backdoor\"\r\nContent-Type: application/zip\r\n\r\n* * * * * root /bin/bash -c 'id > /tmp/pwned'\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  # Server-side template in upload
+  - id: "upload-014"
+    title: "SSTI payload in uploaded filename"
+    tags: ["file-upload", "ssti", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{{config.SECRET_KEY}}.txt\"\r\nContent-Type: text/plain\r\n\r\ntest\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "upload-015"
+    title: ".htaccess upload to enable PHP execution"
+    tags: ["file-upload", "config-override", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\".htaccess\"\r\nContent-Type: application/octet-stream\r\n\r\nAddType application/x-httpd-php .jpg\r\n------Boundary--"
+    expected:
+      status: 403
+      action: "block"

@@ -1,0 +1,22 @@
+services:
+  modsecurity:
+    image: owasp/modsecurity-crs:nginx-alpine
+    ports:
+      - "8080:8080"
+    environment:
+      - PARANOIA=1
+      - ANOMALY_INBOUND=5
+      - ANOMALY_OUTBOUND=4
+      - BACKEND=http://backend:80
+    volumes:
+      - ./modsecurity.conf:/etc/modsecurity.d/owasp-crs/modsecurity.conf:ro
+    depends_on:
+      - backend
+
+  backend:
+    image: nginx:alpine
+    volumes:
+      - ./backend.conf:/etc/nginx/conf.d/default.conf:ro
+
+  # Run tests:
+  #   waf-playbook run --target http://localhost:8080 --name modsecurity --block-status 403

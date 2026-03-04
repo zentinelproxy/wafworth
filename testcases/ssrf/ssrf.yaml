@@ -1,0 +1,232 @@
+meta:
+  category: "Server-Side Request Forgery"
+  subcategory: "SSRF"
+  owasp: "A10:2021, WSTG-INPV-19"
+  severity: "high"
+
+tests:
+  - id: "ssrf-001"
+    title: "AWS metadata endpoint"
+    tags: ["ssrf", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://169.254.169.254/latest/meta-data/"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-002"
+    title: "AWS metadata with IMDSv2"
+    tags: ["ssrf", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://169.254.169.254/latest/api/token"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-003"
+    title: "GCP metadata endpoint"
+    tags: ["ssrf", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://metadata.google.internal/computeMetadata/v1/"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-004"
+    title: "Azure metadata endpoint"
+    tags: ["ssrf", "cloud", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://169.254.169.254/metadata/instance?api-version=2021-02-01"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-005"
+    title: "Localhost access"
+    tags: ["ssrf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://127.0.0.1/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-006"
+    title: "Localhost with decimal IP"
+    tags: ["ssrf", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://2130706433/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-007"
+    title: "IPv6 localhost"
+    tags: ["ssrf", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://[::1]/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-008"
+    title: "Private network 10.x.x.x"
+    tags: ["ssrf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://10.0.0.1/internal"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-009"
+    title: "Private network 192.168.x.x"
+    tags: ["ssrf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://192.168.1.1/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-010"
+    title: "file:// protocol"
+    tags: ["ssrf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=file:///etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-011"
+    title: "gopher:// protocol"
+    tags: ["ssrf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=gopher://127.0.0.1:6379/_INFO"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-012"
+    title: "dict:// protocol"
+    tags: ["ssrf", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=dict://127.0.0.1:6379/INFO"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-013"
+    title: "DNS rebinding - short hostname"
+    tags: ["ssrf", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://localtest.me/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-014"
+    title: "URL with credentials"
+    tags: ["ssrf", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://admin:password@127.0.0.1/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssrf-015"
+    title: "Hex-encoded localhost"
+    tags: ["ssrf", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://0x7f000001/admin"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "ssrf-fp-001"
+    title: "False positive - normal external URL"
+    tags: ["ssrf", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=https://api.github.com/repos/zentinelproxy/zentinel"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "ssrf-fp-002"
+    title: "False positive - CDN URL"
+    tags: ["ssrf", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "ssrf-fp-003"
+    title: "False positive - webhook URL"
+    tags: ["ssrf", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/webhooks"
+      headers:
+        Content-Type: "application/json"
+      body: '{"url":"https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXX"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "ssrf-fp-004"
+    title: "False positive - image URL"
+    tags: ["ssrf", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/avatar"
+      headers:
+        Content-Type: "application/json"
+      body: '{"avatar_url":"https://avatars.githubusercontent.com/u/12345678"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "ssrf-fp-005"
+    title: "False positive - OAuth callback URL"
+    tags: ["ssrf", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/auth/callback"
+      query_string: "redirect_uri=https://myapp.com/auth/callback&code=abc123"
+    expected:
+      status: 200
+      action: "allow"

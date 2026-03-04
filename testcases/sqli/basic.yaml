@@ -1,0 +1,183 @@
+meta:
+  category: "SQL Injection"
+  subcategory: "Basic"
+  owasp: "A03:2021, WSTG-INPV-05"
+  severity: "critical"
+
+tests:
+  - id: "sqli-basic-001"
+    title: "Classic OR 1=1 injection"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-002"
+    title: "OR 1=1 with double dash comment"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1' OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-003"
+    title: "OR 1=1 with hash comment"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1' OR 1=1#"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-004"
+    title: "Single quote escape with always-true condition"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "name=admin'--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-005"
+    title: "Numeric parameter with OR"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 OR 1=1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-006"
+    title: "SQL injection in POST body (form)"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "username=admin'--&password=x"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-007"
+    title: "SQL injection in JSON body"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/query"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"SELECT * FROM users WHERE id=1 OR 1=1"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-008"
+    title: "Tautology with string comparison"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=test' OR 'x'='x"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-009"
+    title: "AND-based condition injection"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1 AND 1=1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-010"
+    title: "SELECT in query parameter"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "filter=SELECT username FROM users"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-011"
+    title: "INSERT INTO injection"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "value=x'; INSERT INTO admin VALUES('hacker','pass')--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-012"
+    title: "UPDATE SET injection"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "value=x'; UPDATE users SET role='admin' WHERE id=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-013"
+    title: "DELETE FROM injection"
+    tags: ["sqli", "basic", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "value=x'; DELETE FROM sessions--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-014"
+    title: "SQL injection in Cookie header"
+    tags: ["sqli", "basic", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/dashboard"
+      headers:
+        Cookie: "session_id=abc' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-basic-015"
+    title: "SQL injection in Referer header"
+    tags: ["sqli", "basic", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/analytics"
+      headers:
+        Referer: "http://example.com/?id=1' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"

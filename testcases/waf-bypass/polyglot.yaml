@@ -1,0 +1,145 @@
+meta:
+  category: "WAF Bypass"
+  subcategory: "Polyglot Payloads"
+  owasp: "WSTG-INPV-18"
+  severity: "critical"
+
+tests:
+  # --- Cross-injection polyglots ---
+  # Payloads valid in multiple injection contexts simultaneously
+
+  - id: "bypass-poly-001"
+    title: "SQLi + XSS polyglot"
+    tags: ["waf-bypass", "polyglot", "sqli", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/search"
+      query_string: "q='-var x=1;alert(1)//\\';1 OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-002"
+    title: "SQLi + XSS + template injection polyglot"
+    tags: ["waf-bypass", "polyglot", "sqli", "xss", "ssti", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/search"
+      query_string: "q={{7*7}}<script>alert(1)</script>' OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-003"
+    title: "XSS polyglot (multiple contexts: attribute, tag, script)"
+    tags: ["waf-bypass", "polyglot", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "input=jaVasCript:/*-/*`/*\\`/*'/*\"/**/(/* */oNcliCk=alert() )//%%0telerik0telerik11telerik12*/alert(1)//"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-004"
+    title: "XSS polyglot (Rsnake/OWASP classic)"
+    tags: ["waf-bypass", "polyglot", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "x=%22%3E%3Csvg/onload=alert(1)//&y='-alert(1)-'&z=</script><script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-005"
+    title: "Command injection + path traversal polyglot"
+    tags: ["waf-bypass", "polyglot", "cmdi", "traversal", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/file"
+      query_string: "name=../../../../etc/passwd;id"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-006"
+    title: "SSTI + SQLi polyglot"
+    tags: ["waf-bypass", "polyglot", "ssti", "sqli", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/render"
+      content_type: "application/x-www-form-urlencoded"
+      body: "template={{config.__class__.__init__.__globals__['os'].popen('id').read()}}' UNION SELECT 1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-007"
+    title: "XXE + SSRF polyglot"
+    tags: ["waf-bypass", "polyglot", "xxe", "ssrf", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/parse"
+      content_type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/iam/security-credentials/">]><data>&xxe;</data>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-008"
+    title: "XSS polyglot bypassing common filters"
+    tags: ["waf-bypass", "polyglot", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=%3Cimg%20src%3Dx%20onerror%3D%22%26%2397%3B%26%23108%3B%26%23101%3B%26%23114%3B%26%23116%3B(1)%22%3E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-009"
+    title: "Deserialization + command injection polyglot (Java)"
+    tags: ["waf-bypass", "polyglot", "deserialization", "cmdi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      content_type: "application/x-www-form-urlencoded"
+      body: "obj=rO0ABXNyABFqYXZhLnV0aWwuSGFzaE1hcA==;cat /etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-010"
+    title: "LDAP + SQLi polyglot"
+    tags: ["waf-bypass", "polyglot", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "filter=*)(%26(objectClass=*)(uid=*))' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-011"
+    title: "Multi-encoding polyglot (URL + HTML entity + Unicode)"
+    tags: ["waf-bypass", "polyglot", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/search"
+      query_string: "q=%253Cscript%253E%26%2397lert(1)%253C/script%253E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-poly-012"
+    title: "JSON injection + NoSQL + SQLi polyglot"
+    tags: ["waf-bypass", "polyglot", "sqli", "nosql", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      content_type: "application/json"
+      body: '{"username":{"$gt":""},"password":"x\" OR 1=1--"}'
+    expected:
+      status: 403
+      action: "block"

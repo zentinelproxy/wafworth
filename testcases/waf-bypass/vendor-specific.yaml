@@ -1,0 +1,179 @@
+meta:
+  category: "WAF Bypass"
+  subcategory: "Vendor-Specific Bypass Patterns"
+  owasp: "WSTG-INPV-18"
+  severity: "critical"
+
+tests:
+  # --- Common CDN/WAF bypass patterns ---
+  # Reference: waf-bypass.com, community research 2024-2026
+
+  # Cloudflare-pattern bypasses
+  - id: "bypass-vendor-001"
+    title: "XSS via SVG animate with onbegin"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<svg><animate onbegin=alert(1) attributeName=x dur=1s>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-002"
+    title: "XSS via details/summary ontoggle"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<details open ontoggle=alert(1)><summary>click</summary></details>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-003"
+    title: "XSS via math/mtext elements"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<math><mtext><table><mglyph><style><!--</style><img src=x onerror=alert(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-004"
+    title: "XSS via set element href"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<svg><set attributeName=href to=javascript:alert(1)><a id=x>click</a></svg>"
+    expected:
+      status: 403
+      action: "block"
+
+  # AWS WAF-pattern bypasses
+  - id: "bypass-vendor-005"
+    title: "SQLi with inline comment word splitting"
+    tags: ["waf-bypass", "vendor", "sqli", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1'/*!50000UNION*//*!50000SELECT*/password/*!50000FROM*/users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-006"
+    title: "SQLi with scientific notation and LIKE"
+    tags: ["waf-bypass", "vendor", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1e0'LIKE'1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-007"
+    title: "SQLi with backtick delimiter"
+    tags: ["waf-bypass", "vendor", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1`-sleep(5)-`1"
+    expected:
+      status: 403
+      action: "block"
+
+  # Akamai-pattern bypasses
+  - id: "bypass-vendor-008"
+    title: "XSS via iframe srcdoc attribute"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<iframe srcdoc='<script>alert(1)</script>'></iframe>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-009"
+    title: "XSS via object data URI"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<object data='data:text/html,<script>alert(1)</script>'>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-010"
+    title: "XSS via marquee onstart"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<marquee onstart=alert(1)>test</marquee>"
+    expected:
+      status: 403
+      action: "block"
+
+  # Imperva-pattern bypasses
+  - id: "bypass-vendor-011"
+    title: "SQLi with JSON extraction syntax"
+    tags: ["waf-bypass", "vendor", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1 AND JSON_EXTRACT('{\"a\":1}','$.a')=1 UNION SELECT password FROM users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-012"
+    title: "SQLi with HANDLER statement (MySQL)"
+    tags: ["waf-bypass", "vendor", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'; HANDLER users OPEN; HANDLER users READ FIRST;--"
+    expected:
+      status: 403
+      action: "block"
+
+  # Generic modern bypasses (2025-2026)
+  - id: "bypass-vendor-013"
+    title: "XSS via custom element with constructor"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<custom-tag onfocus=alert(1) autofocus tabindex=1>test</custom-tag>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-014"
+    title: "SQLi via LOAD_FILE and INTO OUTFILE"
+    tags: ["waf-bypass", "vendor", "sqli", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/export"
+      query_string: "id=1 UNION SELECT LOAD_FILE('/etc/passwd') INTO OUTFILE '/tmp/out.txt'--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-vendor-015"
+    title: "XSS via template literal in event handler"
+    tags: ["waf-bypass", "vendor", "xss", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/page"
+      query_string: "q=<img src=x onerror=alert`1`>"
+    expected:
+      status: 403
+      action: "block"

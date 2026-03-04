@@ -1,0 +1,121 @@
+meta:
+  category: "SQL Injection"
+  subcategory: "Advanced"
+  owasp: "A03:2021, WSTG-INPV-05"
+  severity: "critical"
+
+tests:
+  - id: "sqli-adv-001"
+    title: "Error-based extraction via EXTRACTVALUE"
+    tags: ["sqli", "advanced", "error-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT version()),0x7e))--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-002"
+    title: "Error-based extraction via UPDATEXML"
+    tags: ["sqli", "advanced", "error-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 AND UPDATEXML(1,CONCAT(0x7e,(SELECT table_name FROM information_schema.tables LIMIT 1)),1)--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-003"
+    title: "ORDER BY based injection with CASE"
+    tags: ["sqli", "advanced", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "sort=(CASE WHEN (SELECT SUBSTRING(password,1,1) FROM users WHERE username='admin')='a' THEN name ELSE email END)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-004"
+    title: "SQL injection in User-Agent header"
+    tags: ["sqli", "advanced", "header", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/analytics"
+      headers:
+        User-Agent: "Mozilla/5.0' OR 1=1; DROP TABLE sessions--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-005"
+    title: "HAVING clause injection for column enumeration"
+    tags: ["sqli", "advanced", "error-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "category=electronics' HAVING 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-006"
+    title: "GROUP BY column enumeration"
+    tags: ["sqli", "advanced", "error-based", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "category=electronics' GROUP BY 1,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-007"
+    title: "Stored procedure exploitation via CALL"
+    tags: ["sqli", "advanced", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/query"
+      headers:
+        Content-Type: "application/json"
+      body: '{"filter":"1''; CALL xp_cmdshell(''net user hacker Pass123! /add'')--"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-008"
+    title: "Second-order injection via profile update"
+    tags: ["sqli", "advanced", "second-order", "paranoia-1"]
+    request:
+      method: "PUT"
+      path: "/api/profile"
+      headers:
+        Content-Type: "application/json"
+      body: '{"display_name":"admin''--","bio":"Just a user"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-009"
+    title: "PostgreSQL dollar-quoting injection"
+    tags: ["sqli", "advanced", "postgresql", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1; SELECT $$malicious$$::text; DROP TABLE users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-adv-010"
+    title: "SQLite specific injection with ATTACH DATABASE"
+    tags: ["sqli", "advanced", "sqlite", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1; ATTACH DATABASE '/var/www/shell.php' AS shell; CREATE TABLE shell.payload(cmd TEXT);--"
+    expected:
+      status: 403
+      action: "block"

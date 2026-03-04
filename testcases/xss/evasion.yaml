@@ -1,0 +1,140 @@
+meta:
+  category: "Cross-Site Scripting"
+  subcategory: "XSS Evasion"
+  owasp: "A03:2021, WSTG-CLNT-01"
+  severity: "high"
+
+tests:
+  - id: "xss-evasion-001"
+    title: "Case-varied script tag"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<ScRiPt>alert('XSS')</ScRiPt>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-002"
+    title: "Null byte in tag"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<scr%00ipt>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-003"
+    title: "HTML entity encoding"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<img src=x onerror=&#97;&#108;&#101;&#114;&#116;(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-004"
+    title: "Hex encoding in event handler"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<img src=x onerror=\\x61\\x6c\\x65\\x72\\x74(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-005"
+    title: "Unicode escape"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<img src=x onerror=\\u0061\\u006c\\u0065\\u0072\\u0074(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-006"
+    title: "Double encoding"
+    tags: ["xss", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%253Cscript%253Ealert(1)%253C/script%253E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-007"
+    title: "Tab/newline in event handler"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<img src=x onerror=%09alert(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-008"
+    title: "Backtick instead of parentheses"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<script>alert`1`</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-009"
+    title: "SVG with use element"
+    tags: ["xss", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<svg><use xlink:href=\"data:image/svg+xml,<svg onload=alert(1)>\"/></svg>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-010"
+    title: "Data URI in iframe"
+    tags: ["xss", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=<iframe src=\"data:text/html,<script>alert(1)</script>\">"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-evasion-fp-001"
+    title: "False positive - HTML in code discussion"
+    tags: ["xss", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"The <script> tag should be placed at the bottom of the body element"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "xss-evasion-fp-002"
+    title: "False positive - angle brackets in math"
+    tags: ["xss", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=price > 100 AND price < 500"
+    expected:
+      status: 200
+      action: "allow"

@@ -1,0 +1,97 @@
+meta:
+  category: "SQL Injection"
+  subcategory: "NoSQL Injection"
+  owasp: "A03:2021, WSTG-INPV-05"
+  severity: "critical"
+
+tests:
+  - id: "sqli-nosql-001"
+    title: "MongoDB $gt operator injection"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      headers:
+        Content-Type: "application/json"
+      body: '{"username":{"$gt":""},"password":{"$gt":""}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-nosql-002"
+    title: "MongoDB $ne operator injection"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      headers:
+        Content-Type: "application/json"
+      body: '{"username":{"$ne":""},"password":{"$ne":""}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-nosql-003"
+    title: "MongoDB $regex injection"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      headers:
+        Content-Type: "application/json"
+      body: '{"username":{"$regex":"^admin"}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-nosql-004"
+    title: "MongoDB $where injection"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      headers:
+        Content-Type: "application/json"
+      body: '{"$where":"this.password.match(/.*/)!=null"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-nosql-005"
+    title: "MongoDB $or operator bypass"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/login"
+      headers:
+        Content-Type: "application/json"
+      body: '{"$or":[{"username":"admin"},{"username":"root"}],"password":{"$gt":""}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-nosql-006"
+    title: "MongoDB $nin injection"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/users"
+      headers:
+        Content-Type: "application/json"
+      body: '{"role":{"$nin":["user"]}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-nosql-007"
+    title: "MongoDB JavaScript injection via $where"
+    tags: ["sqli", "nosql", "mongodb", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/search"
+      headers:
+        Content-Type: "application/json"
+      body: '{"$where":"function(){return true}"}'
+    expected:
+      status: 403
+      action: "block"

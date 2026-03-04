@@ -1,0 +1,8 @@
+listener ":8080" {
+    route {
+        waf {
+            engine "zentinel"
+        }
+        upstream "http://backend:80"
+    }
+}

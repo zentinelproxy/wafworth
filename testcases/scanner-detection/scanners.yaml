@@ -1,0 +1,311 @@
+meta:
+  category: "Scanner Detection"
+  subcategory: "Automated Tool Detection"
+  owasp: "A07:2021, WSTG-INFO-02"
+  severity: "medium"
+
+tests:
+  - id: "scanner-001"
+    title: "SQLMap user agent"
+    tags: ["scanner", "sqli-tool", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "sqlmap/1.7.2#stable (https://sqlmap.org)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-002"
+    title: "Nikto user agent"
+    tags: ["scanner", "vuln-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Nikto/2.1.6"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-003"
+    title: "Nmap scripting engine"
+    tags: ["scanner", "port-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (compatible; Nmap Scripting Engine; https://nmap.org/book/nse.html)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-004"
+    title: "WPScan user agent"
+    tags: ["scanner", "wp-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/wp-login.php"
+      headers:
+        User-Agent: "WPScan v3.8.25 (https://wpscan.com/)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-005"
+    title: "Burp Suite user agent"
+    tags: ["scanner", "proxy-tool", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) BurpSuite/2023.10"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-006"
+    title: "Nuclei scanner"
+    tags: ["scanner", "vuln-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Nuclei - Open-source project (github.com/projectdiscovery/nuclei)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-007"
+    title: "Dirbuster user agent"
+    tags: ["scanner", "dir-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/admin/"
+      headers:
+        User-Agent: "DirBuster-1.0-RC1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-008"
+    title: "Gobuster user agent"
+    tags: ["scanner", "dir-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/admin"
+      headers:
+        User-Agent: "gobuster/3.6"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-009"
+    title: "Masscan user agent"
+    tags: ["scanner", "port-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/"
+      headers:
+        User-Agent: "masscan/1.3 (https://github.com/robertdavidgraham/masscan)"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-010"
+    title: "OWASP ZAP user agent"
+    tags: ["scanner", "proxy-tool", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) ZAP/2.14.0"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-011"
+    title: "Acunetix scanner"
+    tags: ["scanner", "vuln-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Acunetix)"
+        Acunetix-Product: "WVS/14.0"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-012"
+    title: "w3af scanner"
+    tags: ["scanner", "vuln-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "w3af.org"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-013"
+    title: "Arachni scanner"
+    tags: ["scanner", "vuln-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Arachni/v1.6.1.3"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-014"
+    title: "Jorgee vulnerability scanner"
+    tags: ["scanner", "vuln-scanner", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 Jorgee"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "scanner-015"
+    title: "Havij SQL injection tool"
+    tags: ["scanner", "sqli-tool", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Havij)"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "scanner-fp-001"
+    title: "False positive - Chrome browser"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-002"
+    title: "False positive - Firefox browser"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-003"
+    title: "False positive - curl"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "curl/8.4.0"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-004"
+    title: "False positive - Python requests"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "python-requests/2.31.0"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-005"
+    title: "False positive - Go HTTP client"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Go-http-client/2.0"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-006"
+    title: "False positive - Googlebot"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-007"
+    title: "False positive - Safari browser"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_2) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-008"
+    title: "False positive - Slack link preview"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-009"
+    title: "False positive - GitHub webhook"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/webhooks/github"
+      headers:
+        User-Agent: "GitHub-Hookshot/123abc"
+        Content-Type: "application/json"
+      body: '{"action":"push","ref":"refs/heads/main"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "scanner-fp-010"
+    title: "False positive - monitoring agent"
+    tags: ["scanner", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/health"
+      headers:
+        User-Agent: "Datadog/Agent/7.50.0"
+    expected:
+      status: 200
+      action: "allow"

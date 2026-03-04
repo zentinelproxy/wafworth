@@ -1,0 +1,173 @@
+meta:
+  category: "SQL Injection"
+  subcategory: "Evasion Techniques"
+  owasp: "A03:2021, WSTG-INPV-05"
+  severity: "critical"
+
+tests:
+  - id: "sqli-evasion-001"
+    title: "Case alternation - SeLeCt"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UnIoN SeLeCt username,password FrOm users--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-002"
+    title: "Inline comments between keywords"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UN/**/ION SE/**/LECT 1,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-003"
+    title: "URL-encoded keywords"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1%20UNION%20SELECT%201,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-004"
+    title: "Double URL encoding"
+    tags: ["sqli", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1%2520UNION%2520SELECT%25201,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-005"
+    title: "Tab instead of space"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1%09UNION%09SELECT%091,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-006"
+    title: "Newline instead of space"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1%0AUNION%0ASELECT%0A1,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-007"
+    title: "MySQL version comment bypass"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 /*!UNION*/ /*!SELECT*/ 1,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-008"
+    title: "Hex encoding of strings"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT 0x61646d696e,2--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-009"
+    title: "CHAR() function for string construction"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1 UNION SELECT CHAR(97,100,109,105,110),2--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-010"
+    title: "No spaces using parentheses"
+    tags: ["sqli", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=(1)UNION(SELECT(1),(2),(3))"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-011"
+    title: "Scientific notation bypass"
+    tags: ["sqli", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1e0UNION SELECT 1,2,3--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-012"
+    title: "Null byte injection"
+    tags: ["sqli", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=1%00' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "sqli-evasion-fp-001"
+    title: "False positive - SELECT in English text"
+    tags: ["sqli", "evasion", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/feedback"
+      headers:
+        Content-Type: "application/json"
+      body: '{"comment":"Please select the best option from the dropdown menu"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "sqli-evasion-fp-002"
+    title: "False positive - OR in natural language"
+    tags: ["sqli", "evasion", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=red or blue shoes"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "sqli-evasion-fp-003"
+    title: "False positive - numbers in parameter"
+    tags: ["sqli", "evasion", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "id=12345"
+    expected:
+      status: 200
+      action: "allow"

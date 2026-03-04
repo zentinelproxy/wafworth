@@ -1,0 +1,132 @@
+meta:
+  category: "WAF Bypass"
+  subcategory: "HTTP/2 Specific Attacks"
+  owasp: "WSTG-INPV-18"
+  severity: "high"
+
+tests:
+  # --- HTTP/2 pseudo-header abuse ---
+
+  - id: "bypass-h2-001"
+    title: "HTTP/2 :path pseudo-header with traversal"
+    tags: ["waf-bypass", "http2", "traversal", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/../../../etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-h2-002"
+    title: "HTTP/2 path with encoded newline for request splitting"
+    tags: ["waf-bypass", "http2", "protocol", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data%0d%0aX-Injected:%20true"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-h2-003"
+    title: "HTTP/2 :authority header injection"
+    tags: ["waf-bypass", "http2", "ssrf", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/proxy"
+      headers:
+        Host: "internal-service.local"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-h2-004"
+    title: "HTTP/2 header name with uppercase (protocol violation)"
+    tags: ["waf-bypass", "http2", "protocol", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        TRANSFER-ENCODING: "chunked"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- HTTP/2 CONTINUATION frame abuse ---
+
+  - id: "bypass-h2-005"
+    title: "SQLi in oversized header value (CONTINUATION flood pattern)"
+    tags: ["waf-bypass", "http2", "sqli", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "id=1"
+      headers:
+        X-Data: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- HTTP/2 method abuse ---
+
+  - id: "bypass-h2-006"
+    title: "HTTP/2 CONNECT method with path traversal"
+    tags: ["waf-bypass", "http2", "traversal", "paranoia-2"]
+    request:
+      method: "CONNECT"
+      path: "/../../etc/shadow"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-h2-007"
+    title: "HTTP/2 non-standard method with SQLi"
+    tags: ["waf-bypass", "http2", "sqli", "paranoia-2"]
+    request:
+      method: "PATCH"
+      path: "/api/users/1"
+      content_type: "application/json"
+      body: '{"name":"admin\"; DROP TABLE users;--"}'
+    expected:
+      status: 403
+      action: "block"
+
+  # --- HTTP/2 desync / smuggling ---
+
+  - id: "bypass-h2-008"
+    title: "HTTP/2 with Content-Length and body mismatch (CL desync)"
+    tags: ["waf-bypass", "http2", "desync", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/action"
+      headers:
+        Content-Length: "5"
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "q=1' OR 1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-h2-009"
+    title: "HTTP/2 with Transfer-Encoding header (H2.TE desync)"
+    tags: ["waf-bypass", "http2", "desync", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Transfer-Encoding: "chunked"
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "data=<script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "bypass-h2-010"
+    title: "HTTP/2 header with null byte"
+    tags: ["waf-bypass", "http2", "protocol", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/file"
+      query_string: "name=../../etc/passwd%00.png"
+    expected:
+      status: 403
+      action: "block"

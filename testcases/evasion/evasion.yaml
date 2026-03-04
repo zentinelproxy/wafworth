@@ -1,0 +1,355 @@
+meta:
+  category: "Evasion Techniques"
+  subcategory: "WAF Bypass"
+  owasp: "A05:2021, WSTG-INPV-18"
+  severity: "high"
+
+tests:
+  - id: "evasion-001"
+    title: "URL encoding of attack payload"
+    tags: ["evasion", "encoding", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%3Cscript%3Ealert(1)%3C%2Fscript%3E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-002"
+    title: "Double URL encoding"
+    tags: ["evasion", "encoding", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%253Cscript%253Ealert(1)%253C%252Fscript%253E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-003"
+    title: "Unicode normalization bypass"
+    tags: ["evasion", "unicode", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%EF%BC%9Cscript%EF%BC%9Ealert(1)%EF%BC%9C/script%EF%BC%9E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-004"
+    title: "Case alternation"
+    tags: ["evasion", "case", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "q=1' oR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-005"
+    title: "Comment insertion in SQL"
+    tags: ["evasion", "comments", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'/**/OR/**/1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-006"
+    title: "Null byte injection"
+    tags: ["evasion", "null-byte", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%00<script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-007"
+    title: "Tab character as space"
+    tags: ["evasion", "whitespace", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'%09OR%091=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-008"
+    title: "Carriage return as space"
+    tags: ["evasion", "whitespace", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'%0DOR%0D1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-009"
+    title: "Line feed as space"
+    tags: ["evasion", "whitespace", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'%0AOR%0A1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-010"
+    title: "Vertical tab as space"
+    tags: ["evasion", "whitespace", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'%0BOR%0B1=1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-011"
+    title: "HPP - HTTP Parameter Pollution"
+    tags: ["evasion", "hpp", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1&id=' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-012"
+    title: "Chunked Transfer-Encoding evasion"
+    tags: ["evasion", "chunked", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+        Transfer-Encoding: "chunked"
+      body: "4\r\nid=1\r\n11\r\n' OR '1'='1--\r\n0\r\n\r\n"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-013"
+    title: "Content-Type boundary manipulation"
+    tags: ["evasion", "content-type", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded; charset=ibm037"
+      body: "id=1' OR '1'='1--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-014"
+    title: "Path normalization bypass"
+    tags: ["evasion", "path", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/./data/../data"
+      query_string: "id=1' OR '1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-015"
+    title: "Mixed encoding (URL + HTML entity)"
+    tags: ["evasion", "encoding", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%3Cscr%69pt%3E&#97;lert(1)%3C/script%3E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-016"
+    title: "Overlong UTF-8 sequences"
+    tags: ["evasion", "encoding", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%c0%bc%c1%b3%c1%b2%c0%a9%c1%b0%c1%b4%c0%be"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-017"
+    title: "JSON key unicode escape"
+    tags: ["evasion", "encoding", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"\u0071\u0075\u0065\u0072\u0079":"SELECT * FROM users"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-018"
+    title: "XML CDATA section evasion"
+    tags: ["evasion", "xml", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/xml"
+      headers:
+        Content-Type: "application/xml"
+      body: '<root><data><![CDATA[<script>alert(1)</script>]]></data></root>'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-019"
+    title: "Multipart form boundary evasion"
+    tags: ["evasion", "multipart", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----WebKitFormBoundary"
+      body: "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"data\"\r\n\r\n<script>alert(1)</script>\r\n------WebKitFormBoundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-020"
+    title: "Payload in fragment identifier"
+    tags: ["evasion", "fragment", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "callback=test#<script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-021"
+    title: "Concatenation with + sign"
+    tags: ["evasion", "concat", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'+OR+'1'='1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-022"
+    title: "SQL comment variants"
+    tags: ["evasion", "comments", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      query_string: "id=1'--+-OR 1=1"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-023"
+    title: "JSON string concatenation"
+    tags: ["evasion", "json", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"cmd":"ca"+"t /etc/passwd"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-024"
+    title: "IP address as hex"
+    tags: ["evasion", "encoding", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://0x7f.0x0.0x0.0x1/"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "evasion-025"
+    title: "IP address as octal"
+    tags: ["evasion", "encoding", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/fetch"
+      query_string: "url=http://0177.0.0.1/"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "evasion-fp-001"
+    title: "False positive - URL-encoded spaces"
+    tags: ["evasion", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=hello%20world"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "evasion-fp-002"
+    title: "False positive - plus sign in query"
+    tags: ["evasion", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=hello+world"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "evasion-fp-003"
+    title: "False positive - URL-encoded slash"
+    tags: ["evasion", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/path"
+      query_string: "folder=Documents%2FReports"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "evasion-fp-004"
+    title: "False positive - Unicode characters in text"
+    tags: ["evasion", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"Caf\u00e9 au lait is my favorite drink"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "evasion-fp-005"
+    title: "False positive - base64 image data"
+    tags: ["evasion", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "application/json"
+      body: '{"image":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="}'
+    expected:
+      status: 200
+      action: "allow"

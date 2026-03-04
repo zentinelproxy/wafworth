@@ -1,0 +1,355 @@
+meta:
+  category: "API Security"
+  subcategory: "GraphQL, JWT, JSON"
+  owasp: "A01:2021, WSTG-APIT-01"
+  severity: "high"
+
+tests:
+  - id: "api-001"
+    title: "GraphQL introspection query"
+    tags: ["api", "graphql", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"{ __schema { types { name fields { name } } } }"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-002"
+    title: "GraphQL deeply nested query (DoS)"
+    tags: ["api", "graphql", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"{ user { friends { friends { friends { friends { friends { friends { friends { name } } } } } } } } }"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-003"
+    title: "GraphQL batch query (DoS)"
+    tags: ["api", "graphql", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '[{"query":"{ user(id:1) { name } }"},{"query":"{ user(id:2) { name } }"},{"query":"{ user(id:3) { name } }"},{"query":"{ user(id:4) { name } }"},{"query":"{ user(id:5) { name } }"},{"query":"{ user(id:6) { name } }"},{"query":"{ user(id:7) { name } }"},{"query":"{ user(id:8) { name } }"},{"query":"{ user(id:9) { name } }"},{"query":"{ user(id:10) { name } }"},{"query":"{ user(id:11) { name } }"},{"query":"{ user(id:12) { name } }"},{"query":"{ user(id:13) { name } }"},{"query":"{ user(id:14) { name } }"},{"query":"{ user(id:15) { name } }"},{"query":"{ user(id:16) { name } }"},{"query":"{ user(id:17) { name } }"},{"query":"{ user(id:18) { name } }"},{"query":"{ user(id:19) { name } }"},{"query":"{ user(id:20) { name } }"}]'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-004"
+    title: "GraphQL alias-based DoS"
+    tags: ["api", "graphql", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"{ a1:user(id:1){name} a2:user(id:2){name} a3:user(id:3){name} a4:user(id:4){name} a5:user(id:5){name} a6:user(id:6){name} a7:user(id:7){name} a8:user(id:8){name} a9:user(id:9){name} a10:user(id:10){name} a11:user(id:11){name} a12:user(id:12){name} a13:user(id:13){name} a14:user(id:14){name} a15:user(id:15){name} a16:user(id:16){name} a17:user(id:17){name} a18:user(id:18){name} a19:user(id:19){name} a20:user(id:20){name} }"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-005"
+    title: "GraphQL SQLi in variable"
+    tags: ["api", "graphql", "sqli", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"query($id: String!) { user(id: $id) { name } }","variables":{"id":"1 OR 1=1--"}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-006"
+    title: "JWT none algorithm"
+    tags: ["api", "jwt", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/protected"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9."
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-007"
+    title: "JWT algorithm confusion (RS256 to HS256)"
+    tags: ["api", "jwt", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/protected"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-008"
+    title: "JWT with jwk header injection"
+    tags: ["api", "jwt", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/protected"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImp3ayI6eyJrdHkiOiJSU0EiLCJuIjoiMEtBb3ciLCJlIjoiQVFBQiJ9fQ.eyJzdWIiOiIxMjM0NTY3ODkwIn0.invalid"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-009"
+    title: "JSON depth bomb"
+    tags: ["api", "json", "dos", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"a":{"b":{"c":{"d":{"e":{"f":{"g":{"h":{"i":{"j":{"k":{"l":{"m":{"n":{"o":{"p":{"q":{"r":{"s":{"t":{"u":{"v":{"w":{"x":{"y":{"z":"deep"}}}}}}}}}}}}}}}}}}}}}}}}}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-010"
+    title: "JSON key bomb"
+    tags: ["api", "json", "dos", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"k1":"v","k2":"v","k3":"v","k4":"v","k5":"v","k6":"v","k7":"v","k8":"v","k9":"v","k10":"v","k11":"v","k12":"v","k13":"v","k14":"v","k15":"v","k16":"v","k17":"v","k18":"v","k19":"v","k20":"v","k21":"v","k22":"v","k23":"v","k24":"v","k25":"v","k26":"v","k27":"v","k28":"v","k29":"v","k30":"v","k31":"v","k32":"v","k33":"v","k34":"v","k35":"v","k36":"v","k37":"v","k38":"v","k39":"v","k40":"v","k41":"v","k42":"v","k43":"v","k44":"v","k45":"v","k46":"v","k47":"v","k48":"v","k49":"v","k50":"v"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-011"
+    title: "Mass assignment via JSON"
+    tags: ["api", "json", "paranoia-2"]
+    request:
+      method: "PUT"
+      path: "/api/users/123"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"John","role":"admin","is_admin":true,"permissions":["*"]}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-012"
+    title: "BOLA - accessing other user resources"
+    tags: ["api", "bola", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/users/1/private-data"
+      headers:
+        Authorization: "Bearer user2token"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-013"
+    title: "API version bypass"
+    tags: ["api", "evasion", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/v1/../v2/admin/users"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-014"
+    title: "Content-Type mismatch attack"
+    tags: ["api", "header", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: "<script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-015"
+    title: "Prototype pollution via JSON"
+    tags: ["api", "json", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"__proto__":{"isAdmin":true}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-016"
+    title: "Prototype pollution via constructor"
+    tags: ["api", "json", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"constructor":{"prototype":{"isAdmin":true}}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-017"
+    title: "REST API enumeration via sequential IDs"
+    tags: ["api", "enumeration", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/invoices/00001"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-018"
+    title: "GraphQL mutation with XSS"
+    tags: ["api", "graphql", "xss", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"mutation { updateUser(name: \"<script>alert(1)</script>\") { id } }"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-019"
+    title: "OpenAPI/Swagger endpoint probe"
+    tags: ["api", "recon", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/swagger.json"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "api-020"
+    title: "GraphQL field suggestion abuse"
+    tags: ["api", "graphql", "recon", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"{ __type(name: \"User\") { fields { name type { name } } } }"}'
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "api-fp-001"
+    title: "False positive - normal GraphQL query"
+    tags: ["api", "false-positive"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"{ user(id: \"123\") { name email } }"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-002"
+    title: "False positive - normal JWT"
+    tags: ["api", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/protected"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.valid-signature"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-003"
+    title: "False positive - normal JSON POST"
+    tags: ["api", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"Product","price":29.99,"category":"electronics"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-004"
+    title: "False positive - GraphQL mutation"
+    tags: ["api", "false-positive"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"mutation { createUser(input: { name: \"Jane\", email: \"jane@example.com\" }) { id } }"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-005"
+    title: "False positive - JSON with nested objects"
+    tags: ["api", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/orders"
+      headers:
+        Content-Type: "application/json"
+      body: '{"customer":{"name":"John","address":{"city":"NYC","zip":"10001"}},"items":[{"id":1,"qty":2}]}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-006"
+    title: "False positive - API key in header"
+    tags: ["api", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/data"
+      headers:
+        X-API-Key: "sk_live_abc123def456"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-007"
+    title: "False positive - PATCH request"
+    tags: ["api", "false-positive"]
+    request:
+      method: "PATCH"
+      path: "/api/users/123"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"Updated Name"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "api-fp-008"
+    title: "False positive - pagination parameters"
+    tags: ["api", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/users"
+      query_string: "page=2&per_page=25&sort=name&order=asc"
+    expected:
+      status: 200
+      action: "allow"

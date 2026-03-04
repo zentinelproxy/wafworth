@@ -1,0 +1,94 @@
+meta:
+  category: "Cross-Site Scripting"
+  subcategory: "Polyglot XSS"
+  owasp: "A03:2021, WSTG-CLNT-01"
+  severity: "high"
+
+tests:
+  - id: "xss-polyglot-001"
+    title: "Classic polyglot - breaks out of multiple contexts"
+    tags: ["xss", "polyglot", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=jaVasCript:/*-/*`/*\\`/*'/*\"/**/(/* */oNcliCk=alert() )//%%0telerik%%0a1telerik%250telerik01telerik/telerik/*>%3CSvG/<telerikSvG/telerikONLOAD=alert()//>%0D%0A%0d%0a//</telerikstYle/</telerikscRipt/--!>\\x3telerikcsVg/<teleriksvG/telerikoNloAd=alert()//>%0D%0A%0d%0a//</telerikstYle/</telerikscRipt/--!>\\x3e"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-002"
+    title: "Portswigger polyglot"
+    tags: ["xss", "polyglot", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=\"onclick=alert(1)//<button ' onclick=alert(1)//> */ alert(1)//"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-003"
+    title: "Multi-context polyglot"
+    tags: ["xss", "polyglot", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q='-alert(1)-'"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-004"
+    title: "HTML attribute escape polyglot"
+    tags: ["xss", "polyglot", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=\"><svg onload=alert(1)>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-005"
+    title: "Mixed quotes polyglot"
+    tags: ["xss", "polyglot", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=</script><script>alert(1)</script>"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-006"
+    title: "URL encoded polyglot"
+    tags: ["xss", "polyglot", "paranoia-1"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=%3Cscript%3Ealert(1)%3C/script%3E"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-007"
+    title: "Angular template injection polyglot"
+    tags: ["xss", "polyglot", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q={{constructor.constructor('alert(1)')()"
+    expected:
+      status: 403
+      action: "block"
+
+  - id: "xss-polyglot-008"
+    title: "JSFuck-style encoding"
+    tags: ["xss", "polyglot", "paranoia-2"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=[][(![]+[])[+[]]+(![]+[])[!+[]+!+[]]+(![]+[])[+!+[]]+(!![]+[])[+[]]]"
+    expected:
+      status: 403
+      action: "block"

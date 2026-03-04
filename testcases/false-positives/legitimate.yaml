@@ -1,0 +1,446 @@
+meta:
+  category: "False Positives"
+  subcategory: "Legitimate Traffic"
+  owasp: "N/A"
+  severity: "info"
+
+tests:
+  # --- Normal browsing ---
+
+  - id: "fp-browse-001"
+    title: "Simple GET request"
+    tags: ["false-positive", "browsing"]
+    request:
+      method: "GET"
+      path: "/"
+      headers:
+        User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        Accept: "text/html,application/xhtml+xml"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-browse-002"
+    title: "API endpoint with path params"
+    tags: ["false-positive", "browsing"]
+    request:
+      method: "GET"
+      path: "/api/v2/users/12345/orders"
+      headers:
+        Accept: "application/json"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-browse-003"
+    title: "Static asset request"
+    tags: ["false-positive", "browsing"]
+    request:
+      method: "GET"
+      path: "/static/js/app.bundle.min.js"
+      headers:
+        Accept: "*/*"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-browse-004"
+    title: "Health check endpoint"
+    tags: ["false-positive", "browsing"]
+    request:
+      method: "GET"
+      path: "/health"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-browse-005"
+    title: "Metrics endpoint"
+    tags: ["false-positive", "browsing"]
+    request:
+      method: "GET"
+      path: "/metrics"
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- API payloads ---
+
+  - id: "fp-api-001"
+    title: "JSON API - create user"
+    tags: ["false-positive", "api"]
+    request:
+      method: "POST"
+      path: "/api/users"
+      headers:
+        Content-Type: "application/json"
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiJ9.valid"
+      body: '{"name":"Jane Smith","email":"jane@company.com","role":"developer","team":"backend"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-api-002"
+    title: "JSON API - update settings"
+    tags: ["false-positive", "api"]
+    request:
+      method: "PUT"
+      path: "/api/settings"
+      headers:
+        Content-Type: "application/json"
+      body: '{"theme":"dark","language":"en-US","notifications":{"email":true,"push":false},"timezone":"America/New_York"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-api-003"
+    title: "JSON API - search with filters"
+    tags: ["false-positive", "api"]
+    request:
+      method: "GET"
+      path: "/api/products"
+      query_string: "category=electronics&min_price=50&max_price=500&sort=price&order=asc&page=1&per_page=20"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-api-004"
+    title: "Multipart file upload"
+    tags: ["false-positive", "api"]
+    request:
+      method: "POST"
+      path: "/api/documents/upload"
+      headers:
+        Content-Type: "multipart/form-data; boundary=----Boundary"
+      body: "------Boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"report.pdf\"\r\nContent-Type: application/pdf\r\n\r\nPDF-content-here\r\n------Boundary--"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-api-005"
+    title: "GraphQL - simple query"
+    tags: ["false-positive", "api"]
+    request:
+      method: "POST"
+      path: "/graphql"
+      headers:
+        Content-Type: "application/json"
+      body: '{"query":"{ products(category: \"electronics\") { id name price } }"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Form submissions ---
+
+  - id: "fp-form-001"
+    title: "Login form submission"
+    tags: ["false-positive", "form"]
+    request:
+      method: "POST"
+      path: "/api/auth/login"
+      headers:
+        Content-Type: "application/x-www-form-urlencoded"
+      body: "username=john.doe&password=MyS3cureP%40ss"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-form-002"
+    title: "Contact form with long text"
+    tags: ["false-positive", "form"]
+    request:
+      method: "POST"
+      path: "/api/contact"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"John Smith","email":"john@company.com","subject":"Partnership Inquiry","message":"Hello, I am interested in discussing a potential partnership between our organizations. We have been impressed with your products and would like to explore how we might work together. Could we schedule a call this week? Best regards, John"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-form-003"
+    title: "Registration form"
+    tags: ["false-positive", "form"]
+    request:
+      method: "POST"
+      path: "/api/auth/register"
+      headers:
+        Content-Type: "application/json"
+      body: '{"first_name":"María","last_name":"García-López","email":"maria.garcia@empresa.es","password":"Str0ng!P@ssw0rd","phone":"+34612345678","country":"ES"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-form-004"
+    title: "Feedback form with special characters"
+    tags: ["false-positive", "form"]
+    request:
+      method: "POST"
+      path: "/api/feedback"
+      headers:
+        Content-Type: "application/json"
+      body: '{"rating":4,"comment":"Great product! I love the new features (especially the dashboard). Price: $49.99/month. Would recommend 10/10."}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-form-005"
+    title: "Address form with special chars"
+    tags: ["false-positive", "form"]
+    request:
+      method: "POST"
+      path: "/api/addresses"
+      headers:
+        Content-Type: "application/json"
+      body: '{"street":"123 OBrien St, Apt #4B","city":"San Jose","state":"CA","zip":"95112","country":"US"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- SQL-like content ---
+
+  - id: "fp-sql-001"
+    title: "Blog post about SQL"
+    tags: ["false-positive", "sql-like"]
+    request:
+      method: "POST"
+      path: "/api/posts"
+      headers:
+        Content-Type: "application/json"
+      body: '{"title":"Introduction to SQL","content":"SQL stands for Structured Query Language. A basic SELECT statement looks like: SELECT * FROM table WHERE id = 1. You can also use UNION to combine results from multiple tables."}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-sql-002"
+    title: "Technical documentation with code"
+    tags: ["false-positive", "sql-like"]
+    request:
+      method: "POST"
+      path: "/api/docs"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"To drop a database in PostgreSQL, use: DROP DATABASE mydb; To create a new table: CREATE TABLE users (id SERIAL PRIMARY KEY, name VARCHAR(100));"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-sql-003"
+    title: "Search query with OR keyword"
+    tags: ["false-positive", "sql-like"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=JavaScript OR TypeScript developer jobs"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-sql-004"
+    title: "Chat message with technical content"
+    tags: ["false-positive", "sql-like"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"to":"user2","message":"Can you check if the user table has the right schema? I think we need to alter the table and add a new column for the email field."}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Code snippets ---
+
+  - id: "fp-code-001"
+    title: "JavaScript code in chat"
+    tags: ["false-positive", "code"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"Try this: document.getElementById(\"myElement\").innerHTML = \"Hello World\"; to update the element."}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-code-002"
+    title: "Python code snippet"
+    tags: ["false-positive", "code"]
+    request:
+      method: "POST"
+      path: "/api/snippets"
+      headers:
+        Content-Type: "application/json"
+      body: '{"language":"python","code":"import os\nresult = os.path.join(\"/home\", \"user\", \"docs\")\nprint(f\"Path: {result}\")"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-code-003"
+    title: "HTML snippet in documentation"
+    tags: ["false-positive", "code"]
+    request:
+      method: "POST"
+      path: "/api/docs"
+      headers:
+        Content-Type: "application/json"
+      body: '{"content":"To create a button, use: <button onclick=\"handleClick()\">Submit</button>. The onclick attribute calls the JavaScript function."}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-code-004"
+    title: "Regex pattern in config"
+    tags: ["false-positive", "code"]
+    request:
+      method: "POST"
+      path: "/api/rules"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"email_validator","pattern":"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$","description":"Validate email format"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-code-005"
+    title: "Shell command in deployment notes"
+    tags: ["false-positive", "code"]
+    request:
+      method: "POST"
+      path: "/api/notes"
+      headers:
+        Content-Type: "application/json"
+      body: '{"note":"Deployment steps: 1) Run git pull origin main 2) Run docker compose up -d 3) Check logs with docker logs -f api 4) Verify health at /health"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Unicode content ---
+
+  - id: "fp-unicode-001"
+    title: "Chinese text"
+    tags: ["false-positive", "unicode"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"您好，我对贵公司的产品很感兴趣。请问可以安排一次会议吗？"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-unicode-002"
+    title: "Japanese text"
+    tags: ["false-positive", "unicode"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"こんにちは。製品についてお聞きしたいのですが、デモの予約は可能ですか？"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-unicode-003"
+    title: "Arabic text"
+    tags: ["false-positive", "unicode"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"مرحبا، أنا مهتم بمنتجاتكم. هل يمكنني الحصول على عرض تجريبي؟"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-unicode-004"
+    title: "Emoji in message"
+    tags: ["false-positive", "unicode"]
+    request:
+      method: "POST"
+      path: "/api/messages"
+      headers:
+        Content-Type: "application/json"
+      body: '{"message":"Great job on the release! 🎉🚀 The new features are amazing! 💯"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-unicode-005"
+    title: "Mixed scripts"
+    tags: ["false-positive", "unicode"]
+    request:
+      method: "POST"
+      path: "/api/products"
+      headers:
+        Content-Type: "application/json"
+      body: '{"name":"Café Résumé","description":"A premium café located at Straße 42, München. Serving crème brûlée and naïve desserts."}'
+    expected:
+      status: 200
+      action: "allow"
+
+  # --- Edge cases ---
+
+  - id: "fp-edge-001"
+    title: "Long URL with many params"
+    tags: ["false-positive", "edge-case"]
+    request:
+      method: "GET"
+      path: "/api/analytics/events"
+      query_string: "start=2024-01-01&end=2024-12-31&metrics=pageviews,sessions,bounce_rate&dimensions=country,device,browser&filters=country:US,device:mobile&granularity=daily&limit=1000&offset=0"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-edge-002"
+    title: "URL with special characters in values"
+    tags: ["false-positive", "edge-case"]
+    request:
+      method: "GET"
+      path: "/api/search"
+      query_string: "q=C%2B%2B%20developer&location=San%20Francisco%2C%20CA&salary=%24120%2C000%2B"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-edge-003"
+    title: "Base64 content in body"
+    tags: ["false-positive", "edge-case"]
+    request:
+      method: "POST"
+      path: "/api/documents"
+      headers:
+        Content-Type: "application/json"
+      body: '{"filename":"report.pdf","content":"JVBERi0xLjQKMSAwIG9iago8PAovVGl0bGUgKFJlcG9ydCkK","encoding":"base64"}'
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-edge-004"
+    title: "JWT in Authorization header"
+    tags: ["false-positive", "edge-case"]
+    request:
+      method: "GET"
+      path: "/api/protected/resource"
+      headers:
+        Authorization: "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjE3MDQxNTM2MDAsInNjb3BlIjoicmVhZCB3cml0ZSJ9.signature"
+    expected:
+      status: 200
+      action: "allow"
+
+  - id: "fp-edge-005"
+    title: "Large JSON payload"
+    tags: ["false-positive", "edge-case"]
+    request:
+      method: "POST"
+      path: "/api/batch"
+      headers:
+        Content-Type: "application/json"
+      body: '{"operations":[{"method":"GET","path":"/users/1"},{"method":"GET","path":"/users/2"},{"method":"GET","path":"/users/3"},{"method":"PUT","path":"/users/1","body":{"name":"Updated"}},{"method":"DELETE","path":"/users/99"}]}'
+    expected:
+      status: 200
+      action: "allow"
