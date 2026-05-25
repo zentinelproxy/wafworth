@@ -149,9 +149,7 @@ def expand_test_case(tc: TestCase, encodings: list[Encoding]) -> list[ExpandedTe
     return results
 
 
-def expand_all(
-    test_cases: list[TestCase], encodings: list[Encoding]
-) -> list[ExpandedTestCase]:
+def expand_all(test_cases: list[TestCase], encodings: list[Encoding]) -> list[ExpandedTestCase]:
     """Expand all test cases with the given encodings."""
     results: list[ExpandedTestCase] = []
     for tc in test_cases:

@@ -118,15 +118,13 @@ def run(
 
     if fail_under is not None and overall.detection_rate < fail_under:
         console.print(
-            f"\n[red]FAIL: Detection rate {overall.detection_rate:.1%} "
-            f"is below threshold {fail_under:.1%}[/red]"
+            f"\n[red]FAIL: Detection rate {overall.detection_rate:.1%} is below threshold {fail_under:.1%}[/red]"
         )
         exit_code = 1
 
     if fail_fp_over is not None and overall.false_positive_rate > fail_fp_over:
         console.print(
-            f"\n[red]FAIL: FP rate {overall.false_positive_rate:.1%} "
-            f"is above threshold {fail_fp_over:.1%}[/red]"
+            f"\n[red]FAIL: FP rate {overall.false_positive_rate:.1%} is above threshold {fail_fp_over:.1%}[/red]"
         )
         exit_code = 1
 
