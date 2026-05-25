@@ -166,13 +166,15 @@ def markdown_comparison(comparison: dict, output_dir: str = ".") -> Path:
             vals.append(f"{v:.1%}")
         lines.append(f"| {label} | " + " | ".join(vals) + " |")
 
-    lines.extend([
-        "",
-        "## Detection Rate by Category",
-        "",
-        "| Category | " + " | ".join(targets) + " |",
-        "|----------| " + " | ".join("---:" for _ in targets) + " |",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Detection Rate by Category",
+            "",
+            "| Category | " + " | ".join(targets) + " |",
+            "|----------| " + " | ".join("---:" for _ in targets) + " |",
+        ]
+    )
 
     for cat in comparison["meta"]["categories"]:
         vals = []

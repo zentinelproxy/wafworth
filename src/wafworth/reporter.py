@@ -147,6 +147,7 @@ class JSONReporter:
         out = Path(output_dir)
         out.mkdir(parents=True, exist_ok=True)
         import re
+
         name = re.sub(r"[^a-zA-Z0-9_-]", "-", target_name).strip("-").lower() or "results"
         path = out / f"{name}.json"
         path.write_text(json.dumps(data, indent=2))
@@ -197,11 +198,13 @@ class MarkdownReporter:
             )
 
         if fails:
-            lines.extend([
-                "",
-                f"## Failures ({len(fails)})",
-                "",
-            ])
+            lines.extend(
+                [
+                    "",
+                    f"## Failures ({len(fails)})",
+                    "",
+                ]
+            )
             for f in fails[:50]:
                 lines.append(
                     f"- **{f.test_id}**: expected {f.expected_action.value} "
@@ -215,6 +218,7 @@ class MarkdownReporter:
         out = Path(output_dir)
         out.mkdir(parents=True, exist_ok=True)
         import re
+
         name = re.sub(r"[^a-zA-Z0-9_-]", "-", target_name).strip("-").lower() or "results"
         path = out / f"{name}-summary.md"
         path.write_text("\n".join(lines))

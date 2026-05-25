@@ -33,10 +33,10 @@ def _result(
 
 def test_confusion_matrix_basic():
     results = [
-        _result("t1", True, "block"),    # TP
-        _result("t2", False, "block"),   # FN
-        _result("t3", True, "allow"),    # TN
-        _result("t4", False, "allow"),   # FP
+        _result("t1", True, "block"),  # TP
+        _result("t2", False, "block"),  # FN
+        _result("t3", True, "allow"),  # TN
+        _result("t4", False, "allow"),  # FP
     ]
     cm = compute_confusion_matrix(results)
     assert cm.tp == 1
